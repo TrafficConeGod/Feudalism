@@ -1,8 +1,16 @@
 package feudalism;
+
 import java.util.UUID;
 
-public class Main {
-    public static void main(String[] args) {
+/**
+ * Hello world!
+ *
+ */
+public class App 
+{
+    public static void main( String[] args )
+    {
+        System.out.println( "Hello World!" );
         Realm realm = new Realm();
         realm.setOwner(UUID.randomUUID());
         Realm r2 = new Realm();
