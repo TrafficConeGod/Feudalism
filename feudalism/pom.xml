@@ -35,7 +35,7 @@
             <version>4.11</version>
             <scope>test</scope>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>com.github</groupId>
       <artifactId>azraelcore</artifactId>
       <version>1.0</version>
@@ -48,7 +48,7 @@
       <version>1.0</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/deps/azrael-json.jar</systemPath>
-    </dependency>
+    </dependency> -->
   </dependencies>
   <build>
     <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
