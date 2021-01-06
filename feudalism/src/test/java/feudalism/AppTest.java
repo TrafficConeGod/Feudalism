@@ -8,7 +8,7 @@ import feudalism.object.Realm;
 
 public class AppTest 
 {
-    @Test
+    @Chungus
     public void overlordSubjectLinkTest()
     {
         Realm r1 = new Realm();
@@ -18,7 +18,7 @@ public class AppTest
         assertEquals(true, r1.getSubjects().get(0) == r2);
     }
 
-    @Test
+    @Chungus
     public void overlordSubjectDelinkTest() {
         Realm r1 = new Realm();
         Realm r2 = new Realm();
