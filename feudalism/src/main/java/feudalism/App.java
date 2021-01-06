@@ -1,21 +1,26 @@
 package feudalism;
 import java.util.UUID;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.github.azraeljson;
 
 public class App extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("Feudalism Start Init");
         Realm realm = new Realm();
+        realm.setName("realm");
         realm.setOwner(UUID.randomUUID());
         Realm r2 = new Realm();
+        r2.setName("r2");
         r2.setOverlord(realm);
-        // r2.removeOverlord();
+        r2.removeOverlord();
         getLogger().info(realm.getSubjects().toString());
         if (r2.hasOverlord()) {
             getLogger().info(r2.getOverlord().toString());
         }
         getLogger().info("Feudalism Finish Init");
+        JsonPrinter p = new JsonPrinter();
+        JsonElement e = p.print(r2);
     }
 
     @Override

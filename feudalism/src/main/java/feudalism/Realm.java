@@ -14,6 +14,10 @@ public class Realm {
 
     private List<Realm> subjects = new ArrayList<>();
 
+    private List<UUID> members = new ArrayList<>();
+
+    private String name = "";
+
     public Realm() {
         uuid = UUID.randomUUID();
     }
@@ -28,7 +32,7 @@ public class Realm {
 
     @Override
     public String toString() {
-        return getUuid().toString();
+        return getName();
     }
 
     public boolean hasOwner() {
@@ -100,5 +104,25 @@ public class Realm {
         if (subject.hasOverlord() && subject.getOverlord() == this) {
             subject.removeOverlord();
         }
+    }
+
+    public void addMember(UUID member) {
+        members.add(uuid);
+    }
+
+    public boolean hasMember(UUID member) {
+        return members.contains(member);
+    }
+
+    public void removeMember(UUID member) {
+        members.remove(member);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
