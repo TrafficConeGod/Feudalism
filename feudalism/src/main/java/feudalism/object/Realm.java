@@ -72,6 +72,10 @@ public class Realm {
     }
 
     public void setOverlord(Realm overlord) {
+        if (getDescendantSubjects().contains(overlord) || overlord.getDescendantSubjects().contains(this)) {
+            System.out.println("Can not set overlord if already overlord");
+            return;
+        }
         boolean hadOverlord = hasOverlord();
         Realm oldOverlord = getOverlord();
         hasOverlord = true;
@@ -89,6 +93,10 @@ public class Realm {
     }
 
     public void addSubject(Realm subject) {
+        if (getDescendantSubjects().contains(subject) || subject.getDescendantSubjects().contains(this)) {
+            System.out.println("Can not add subject if it already is a descendnat subject or is a subject of this already");
+            return;
+        }
         subjects.add(subject);
         if (!subject.hasOverlord() || subject.getOverlord() != this) {
             subject.setOverlord(this);
@@ -124,5 +132,14 @@ public class Realm {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Realm> getDescendantSubjects() {
+        List<Realm> descendants = new ArrayList<>();
+        descendants.addAll(getSubjects());
+        for (Realm desc : descendants) {
+            descendants.addAll(desc.getDescendantSubjects());
+        }
+        return descendants;
     }
 }
