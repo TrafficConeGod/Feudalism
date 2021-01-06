@@ -5,7 +5,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class App extends JavaPlugin {
     @Override
     public void onEnable() {
-        getLogger().info("Hello, SpigotMC!");
+        getLogger().info("Feudalism Start Init");
+        Realm realm = new Realm();
+        realm.setOwner(UUID.randomUUID());
+        Realm r2 = new Realm();
+        r2.setOverlord(realm);
+        // r2.removeOverlord();
+        getLogger().info(realm.getSubjects().toString());
+        if (r2.hasOverlord()) {
+            getLogger().info(r2.getOverlord().toString());
+        }
+        getLogger().info("Feudalism Finish Init");
     }
 
     @Override

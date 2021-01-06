@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class Realm {
+    private UUID uuid;
+
     private boolean hasOwner = false;
     private UUID owner;
 
@@ -11,6 +13,23 @@ public class Realm {
     private Realm overlord;
 
     private List<Realm> subjects = new ArrayList<>();
+
+    public Realm() {
+        uuid = UUID.randomUUID();
+    }
+
+    public Realm(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    @Override
+    public String toString() {
+        return getUuid().toString();
+    }
 
     public boolean hasOwner() {
         return hasOwner;
