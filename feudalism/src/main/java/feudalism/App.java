@@ -1,7 +1,7 @@
 package feudalism;
 import java.util.UUID;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.github.azraeljson;
+import com.github.azraelcore;
 
 public class App extends JavaPlugin {
     @Override
