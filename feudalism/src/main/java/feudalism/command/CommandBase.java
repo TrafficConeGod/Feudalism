@@ -19,6 +19,7 @@ public class CommandBase implements CommandExecutor {
             return false;
         }
         String subCommandAlias = args[0];
+        // check if a subcommand has an alias for this inputted alias (like create, new, etc.) and execute it if it meets the requirements
         for (SubcommandBase subcommand : getSubcommands()) {
             if (subcommand.hasAlias(subCommandAlias)) {
                 subcommand.onExecute(sender, args);

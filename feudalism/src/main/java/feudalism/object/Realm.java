@@ -59,6 +59,7 @@ public class Realm {
     public void removeOverlord() {
         boolean hadOverlord = hasOverlord();
         hasOverlord = false;
+        // if the subject had an overlord then remove the subject from the overlords subject list
         if (hadOverlord) {
             Realm overlord = getOverlord();
             if (overlord.hasSubject(this)) {
@@ -80,9 +81,11 @@ public class Realm {
         Realm oldOverlord = getOverlord();
         hasOverlord = true;
         this.overlord = overlord;
+        // if the subject had an overlord then remove the subject from the overlords subject list
         if (hadOverlord) {
             oldOverlord.removeSubject(this);
         }
+        // if the subject has an overlord now then add the subject to the overlords subject list
         if (!overlord.hasSubject(this)) {
             overlord.addSubject(this);
         }
@@ -98,6 +101,7 @@ public class Realm {
             return;
         }
         subjects.add(subject);
+        // if the subject doesn't have this overlord then set it's overlord to this
         if (!subject.hasOverlord() || subject.getOverlord() != this) {
             subject.setOverlord(this);
         }
@@ -108,7 +112,12 @@ public class Realm {
     }
 
     public void removeSubject(Realm subject) {
+        if (!hasSubject(subject)) {
+            System.out.println("Can not remove subject that is not a subject of this");
+            return;
+        }
         subjects.remove(subject);
+        // if the subject does have an overlord then remove it
         if (subject.hasOverlord() && subject.getOverlord() == this) {
             subject.removeOverlord();
         }
