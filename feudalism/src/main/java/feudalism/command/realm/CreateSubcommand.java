@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import feudalism.Chat;
+import feudalism.Registry;
 import feudalism.command.SubcommandBase;
 import feudalism.object.Realm;
 
@@ -34,6 +35,7 @@ public class CreateSubcommand extends SubcommandBase {
         Realm realm = new Realm();
         realm.setOwner(player.getUniqueId());
         realm.setName(name);
+        Registry.getInstance().save();
         Chat.sendMessage(player, String.format("Created realm with name %s", realm.getName()));
         return true;
     }
