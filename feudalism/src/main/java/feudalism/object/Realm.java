@@ -24,7 +24,7 @@ public class Realm implements Printable, Readable {
 
     private List<UUID> members = new ArrayList<>();
 
-    private String name = "";
+    private String name = "RealmName";
 
     public Realm() {
         uuid = UUID.randomUUID();
@@ -82,7 +82,7 @@ public class Realm implements Printable, Readable {
     }
 
     public void setOverlord(Realm overlord) {
-        if (getDescendantSubjects().contains(overlord) || overlord.getDescendantSubjects().contains(this)) {
+        if (getDescendantSubjects().contains(overlord)) {
             System.out.println("Can not set overlord if already overlord");
             return;
         }
@@ -108,8 +108,7 @@ public class Realm implements Printable, Readable {
 
     public void addSubject(Realm subject) {
         if (getDescendantSubjects().contains(subject) || subject.getDescendantSubjects().contains(this)) {
-            System.out.println(
-                    "Can not add subject if it already is a descendnat subject or is a subject of this already");
+            System.out.println("Can not add subject if it already is a descendnat subject or is a subject of this already");
             return;
         }
         subjects.add(subject);
