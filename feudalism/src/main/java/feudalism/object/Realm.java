@@ -9,6 +9,7 @@ import ca.uqac.lif.azrael.ObjectReader;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.Printable;
 import ca.uqac.lif.azrael.Readable;
+import feudalism.Registry;
 import ca.uqac.lif.azrael.ReadException;
 
 public class Realm implements Printable, Readable {
@@ -28,10 +29,12 @@ public class Realm implements Printable, Readable {
 
     public Realm() {
         uuid = UUID.randomUUID();
+        Registry.getInstance().addTopRealm(this);
     }
 
     public Realm(UUID uuid) {
         this.uuid = uuid;
+        Registry.getInstance().addTopRealm(this);
     }
 
     public UUID getUuid() {
@@ -75,6 +78,7 @@ public class Realm implements Printable, Readable {
                 overlord.removeSubject(this);
             }
         }
+        Registry.getInstance().removeTopRealm(this);
     }
 
     public Realm getOverlord() {
@@ -100,6 +104,7 @@ public class Realm implements Printable, Readable {
         if (!overlord.hasSubject(this)) {
             overlord.addSubject(this);
         }
+        Registry.getInstance().removeTopRealm(this);
     }
 
     public List<Realm> getSubjects() {

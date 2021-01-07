@@ -6,8 +6,6 @@ import org.junit.Test;
 import feudalism.object.Realm;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.ReadException;
-import ca.uqac.lif.azrael.fridge.FridgeException;
-import ca.uqac.lif.azrael.json.JsonFileFridge;
 import ca.uqac.lif.azrael.json.JsonPrinter;
 import ca.uqac.lif.azrael.json.JsonReader;
 import ca.uqac.lif.json.JsonElement;
