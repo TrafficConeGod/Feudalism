@@ -177,6 +177,10 @@ public class Realm implements Printable, Readable {
         List<Object> list = (ArrayList<Object>) reader.read(object);
         Realm realm = new Realm(UUID.fromString((String)list.get(0)));
         realm.setName((String)list.get(3));
+        List<Realm> subjects = (ArrayList<Realm>) list.get(1);
+        for (Realm subject : subjects) {
+            realm.addSubject(subject);
+        }
         return realm;
     }
 }

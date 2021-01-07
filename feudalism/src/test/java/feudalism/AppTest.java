@@ -41,9 +41,10 @@ public class AppTest {
         JsonReader reader = new JsonReader();
         try {
             JsonElement elem = printer.print(realm);
-            System.out.println(elem.toString());
             Realm realmReconstruct = (Realm) reader.read(elem);
             assertEquals(true, realm.getName() == realmReconstruct.getName());
+            assertEquals(true, realm.getSubjects().size() == realmReconstruct.getSubjects().size());
+            assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
         } catch (PrintException e) {
             e.printStackTrace();
             assertEquals(true, false);
