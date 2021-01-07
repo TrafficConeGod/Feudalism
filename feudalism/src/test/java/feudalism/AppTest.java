@@ -42,13 +42,13 @@ public class AppTest {
         assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
     }
 
-    @Test
-    public void azraelFridgeTest() throws FridgeException {
-        Realm realm = new Realm();
-        realm.setName("Test");
-        JsonFileFridge fridge = new JsonFileFridge("fridge_test.json");
-        fridge.store(realm);
-        Realm reconst = (Realm) fridge.fetch();
-        assertEquals(true, realm.getName().equals(reconst.getName()));
-    }
+    // @Test
+    // public void azraelFridgeTest() throws FridgeException {
+    //     Realm realm = new Realm();
+    //     realm.setName("Test");
+    //     JsonFileFridge fridge = new JsonFileFridge("fridge_test.json");
+    //     fridge.store(realm);
+    //     Realm reconst = (Realm) fridge.fetch();
+    //     assertEquals(true, realm.getName().equals(reconst.getName()));
+    // }
 }
