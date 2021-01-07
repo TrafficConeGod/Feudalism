@@ -43,6 +43,7 @@ public class AppTest {
             JsonElement elem = printer.print(realm);
             Realm realmReconstruct = (Realm) reader.read(elem);
             assertEquals(true, realm.getName() == realmReconstruct.getName());
+            assertEquals(true, realm.getUuid().equals(realmReconstruct.getUuid()));
             assertEquals(true, realm.getSubjects().size() == realmReconstruct.getSubjects().size());
             assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
         } catch (PrintException e) {
