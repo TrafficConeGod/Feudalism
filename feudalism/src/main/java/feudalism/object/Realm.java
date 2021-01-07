@@ -37,6 +37,13 @@ public class Realm implements Printable, Readable {
         Registry.getInstance().addTopRealm(this);
     }
 
+    public Realm(UUID owner, String name) {
+        uuid = UUID.randomUUID();
+        this.setOwner(owner);
+        this.setName(name);
+        Registry.getInstance().addTopRealm(this);
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -78,7 +85,7 @@ public class Realm implements Printable, Readable {
                 overlord.removeSubject(this);
             }
         }
-        Registry.getInstance().removeTopRealm(this);
+        Registry.getInstance().addTopRealm(this);
     }
 
     public Realm getOverlord() {
@@ -172,6 +179,10 @@ public class Realm implements Printable, Readable {
         List<Object> list = new ArrayList<>();
         list.add(uuid.toString());
         list.add(subjects);
+        List<String> members = new ArrayList<>();
+        for (UUID member : this.members) {
+            members.add(member.toString());
+        }
         list.add(members);
         list.add(name);
         return printer.print(list);
@@ -184,6 +195,10 @@ public class Realm implements Printable, Readable {
         List<Realm> subjects = (ArrayList<Realm>) list.get(1);
         for (Realm subject : subjects) {
             realm.addSubject(subject);
+        }
+        List<String> members = (ArrayList<String>) list.get(2);
+        for (String member : members) {
+            realm.addMember(UUID.fromString(member));
         }
         return realm;
     }

@@ -40,7 +40,6 @@ public class App extends JavaPlugin {
                 fridgeFile.createNewFile();
                 FileWriter writer = new FileWriter("plugins/feudalism/fridge.json");
                 JsonPrinter printer = new JsonPrinter();
-                System.out.println(Registry.getInstance());
                 JsonElement elem = printer.print(Registry.getInstance());
                 writer.write(elem.toString());
                 writer.close();
@@ -68,5 +67,6 @@ public class App extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        Registry.getInstance().save();
     }
 }
