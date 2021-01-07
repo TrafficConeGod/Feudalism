@@ -1,9 +1,17 @@
 package feudalism.object;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Realm {
+import ca.uqac.lif.azrael.ObjectPrinter;
+import ca.uqac.lif.azrael.ObjectReader;
+import ca.uqac.lif.azrael.PrintException;
+import ca.uqac.lif.azrael.Printable;
+import ca.uqac.lif.azrael.Readable;
+import ca.uqac.lif.azrael.ReadException;
+
+public class Realm implements Printable, Readable {
     private UUID uuid;
 
     private boolean hasOwner = false;
@@ -59,7 +67,8 @@ public class Realm {
     public void removeOverlord() {
         boolean hadOverlord = hasOverlord();
         hasOverlord = false;
-        // if the subject had an overlord then remove the subject from the overlords subject list
+        // if the subject had an overlord then remove the subject from the overlords
+        // subject list
         if (hadOverlord) {
             Realm overlord = getOverlord();
             if (overlord.hasSubject(this)) {
@@ -81,11 +90,13 @@ public class Realm {
         Realm oldOverlord = getOverlord();
         hasOverlord = true;
         this.overlord = overlord;
-        // if the subject had an overlord then remove the subject from the overlords subject list
+        // if the subject had an overlord then remove the subject from the overlords
+        // subject list
         if (hadOverlord) {
             oldOverlord.removeSubject(this);
         }
-        // if the subject has an overlord now then add the subject to the overlords subject list
+        // if the subject has an overlord now then add the subject to the overlords
+        // subject list
         if (!overlord.hasSubject(this)) {
             overlord.addSubject(this);
         }
@@ -97,7 +108,8 @@ public class Realm {
 
     public void addSubject(Realm subject) {
         if (getDescendantSubjects().contains(subject) || subject.getDescendantSubjects().contains(this)) {
-            System.out.println("Can not add subject if it already is a descendnat subject or is a subject of this already");
+            System.out.println(
+                    "Can not add subject if it already is a descendnat subject or is a subject of this already");
             return;
         }
         subjects.add(subject);
@@ -150,5 +162,21 @@ public class Realm {
             descendants.addAll(desc.getDescendantSubjects());
         }
         return descendants;
+    }
+
+    public Object print(ObjectPrinter<?> printer) throws PrintException {
+        List<Object> list = new ArrayList<>();
+        list.add(uuid.toString());
+        list.add(subjects);
+        list.add(members);
+        list.add(name);
+        return printer.print(list);
+    }
+
+    public Object read(ObjectReader<?> reader, Object object) throws ReadException {
+        List<Object> list = (ArrayList<Object>) reader.read(object);
+        Realm realm = new Realm(UUID.fromString((String)list.get(0)));
+        realm.setName((String)list.get(3));
+        return realm;
     }
 }

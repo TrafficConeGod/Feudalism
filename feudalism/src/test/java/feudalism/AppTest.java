@@ -1,11 +1,6 @@
 package feudalism;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-
-import java.util.UUID;
-
 import org.junit.Test;
 
 import feudalism.object.Realm;
@@ -37,21 +32,24 @@ public class AppTest {
 
     @Test
     public void azraelTest() {
-        UUID uuid = UUID.randomUUID();
-        Realm realm = new Realm(uuid);
+        Realm realm = new Realm();
         realm.setName("Test");
+        Realm r2 = new Realm();
+        r2.setName("Test2");
+        r2.setOverlord(realm);
         JsonPrinter printer = new JsonPrinter();
         JsonReader reader = new JsonReader();
         try {
             JsonElement elem = printer.print(realm);
+            System.out.println(elem.toString());
             Realm realmReconstruct = (Realm) reader.read(elem);
             assertEquals(true, realm.getName() == realmReconstruct.getName());
         } catch (PrintException e) {
             e.printStackTrace();
-            assertSame(true, false);
+            assertEquals(true, false);
         } catch (ReadException e) {
             e.printStackTrace();
-            assertSame(true, false);
+            assertEquals(true, false);
         }
     }
 }
