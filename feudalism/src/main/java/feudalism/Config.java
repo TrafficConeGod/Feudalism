@@ -18,8 +18,14 @@ public class Config {
             // realm config
             {
                 Map<String, Object> map = new HashMap<>();
-                map.put("coord_grid_size", 8);
+                map.put("world", "world");
                 configSchema.put("realm", map);
+            }
+            // grid_coord config
+            {
+                Map<String, Object> map = new HashMap<>();
+                map.put("size", 8);
+                configSchema.put("grid_coord", map);
             }
         }
         return configSchema;
@@ -37,6 +43,8 @@ public class Config {
             String luaValue;
             if (val.getClass() == HashMap.class) {
                 luaValue = mapToLua((Map<String, Object>) val, tabLevel + 1); // lack of type safety go brr
+            } else if (val.getClass() == String.class) {
+                luaValue = "\"" + val.toString() + "\"";
             } else {
                 luaValue = val.toString();
             }
@@ -108,6 +116,9 @@ public class Config {
 
     private static Object get(String path, int type) throws FeudalismException {
         String[] split = path.split("\\.");
+        if (Registry.isJUnitTest() && configTable == null) {
+            load(generate());
+        }
         LuaValue table = configTable;
         for (String pathDown : split) {
             LuaValue val = table.get(pathDown);

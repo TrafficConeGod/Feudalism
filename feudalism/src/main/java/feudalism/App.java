@@ -75,6 +75,7 @@ public class App extends JavaPlugin {
             Registry registry = (Registry) fridge.fetch();
             registry.setFridge(fridge);
             Registry.setInstance(registry);
+            Registry.getInstance().initWorld();
         } catch (FridgeException e) {
             throw new FeudalismException("FridgeException: " + e.getMessage());
         }

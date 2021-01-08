@@ -56,6 +56,16 @@ public class AppTest {
         assertEquals(true, val.equals(LuaValue.valueOf("Test string")));
     }
 
+    @Test
+    public void gridCoordTest() {
+        Realm realm = new Realm();
+        realm.addClaimFromWorldPosition(0, 0);
+        realm.addClaimFromWorldPosition(0, 1);
+        realm.addClaimFromWorldPosition(1, 1);
+        realm.addClaimFromWorldPosition(1, 0);
+        assertEquals(true, realm.getClaims().size() == 1);
+    }
+
     // @Test
     // public void configTest() throws FeudalismException, IOException {
     //     File configFile = new File("config.lua");

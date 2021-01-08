@@ -1,9 +1,9 @@
 package feudalism;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ca.uqac.lif.azrael.ObjectPrinter;
 import ca.uqac.lif.azrael.ObjectReader;
@@ -13,7 +13,11 @@ import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.Readable;
 import ca.uqac.lif.azrael.fridge.FridgeException;
 import ca.uqac.lif.azrael.json.JsonFileFridge;
+import feudalism.object.GridCoord;
 import feudalism.object.Realm;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 
 public class Registry implements Printable, Readable {
     private static Registry instance = new Registry();
@@ -28,9 +32,19 @@ public class Registry implements Printable, Readable {
 
     private JsonFileFridge fridge;
     private List<Realm> topRealms = new ArrayList<>();
+    private Map<Integer, Map<Integer, GridCoord>> gridCoordCache = new HashMap<>();
+    private World world;
 
     public void setFridge(JsonFileFridge fridge) {
         this.fridge = fridge;
+    }
+
+    public void initWorld() throws FeudalismException {
+        String worldName = Config.getString("realm.world");
+        world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            throw new FeudalismException(String.format("World %s does not exist", worldName));
+        }
     }
 
     public void addTopRealm(Realm realm) {
@@ -48,6 +62,48 @@ public class Registry implements Printable, Readable {
     public List<Realm> getTopRealms() {
         return topRealms;
     }
+
+    public boolean hasGridCoord(int x, int z) {
+        return gridCoordCache.containsKey(x) && gridCoordCache.get(x).containsKey(z);
+    }
+
+    public boolean hasGridCoord(GridCoord gridCoord) {
+        return hasGridCoord(gridCoord.getGridX(), gridCoord.getGridZ());
+    }
+
+    public GridCoord getGridCoord(int x, int z) {
+        return gridCoordCache.get(x).get(z);
+    }
+
+    public void addGridCoord(GridCoord gridCoord) {
+        if (!gridCoordCache.containsKey(gridCoord.getGridX())) {
+            Map<Integer, GridCoord> map = new HashMap<>();
+            gridCoordCache.put(gridCoord.getGridX(), map);
+        }
+        Map<Integer, GridCoord> zMap = gridCoordCache.get(gridCoord.getGridX());
+        if (!zMap.containsKey(gridCoord.getGridZ())) {
+            zMap.put(gridCoord.getGridZ(), gridCoord);
+        }
+    }
+
+    public void removeGridCoord(GridCoord gridCoord) {
+        if (hasGridCoord(gridCoord)) {
+            gridCoordCache.get(gridCoord.getGridX()).remove(gridCoord.getGridZ());
+        }
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public static boolean isJUnitTest() {  
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if (element.getClassName().startsWith("org.junit.")) {
+                return true;
+            }           
+        }
+        return false;
+    }      
 
     public void save() {
         try {

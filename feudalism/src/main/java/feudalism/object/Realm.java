@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
 import ca.uqac.lif.azrael.ObjectPrinter;
 import ca.uqac.lif.azrael.ObjectReader;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.Printable;
 import ca.uqac.lif.azrael.Readable;
+import feudalism.Config;
+import feudalism.FeudalismException;
 import feudalism.Registry;
 import ca.uqac.lif.azrael.ReadException;
 
@@ -26,6 +31,8 @@ public class Realm implements Printable, Readable {
     private List<UUID> members = new ArrayList<>();
 
     private String name = "RealmName";
+
+    private List<GridCoord> claims = new ArrayList<>();
 
     public Realm() {
         uuid = UUID.randomUUID();
@@ -182,6 +189,35 @@ public class Realm implements Printable, Readable {
         return descendants;
     }
 
+    public void addClaimFromGridPosition(int x, int z) {
+        GridCoord coord = GridCoord.getFromGridPosition(x, z);
+        if (!claims.contains(coord)) {
+            claims.add(coord);
+        }
+    }
+
+    public void removeClaimFromGridPosition(int x, int z) {
+        GridCoord coord = GridCoord.getFromGridPosition(x, z);
+        claims.remove(coord);
+    }
+
+    public void addClaimFromWorldPosition(int x, int z) {
+        GridCoord coord = GridCoord.getFromWorldPosition(x, z);
+        if (!claims.contains(coord)) {
+            claims.add(coord);
+        }
+    }
+
+    public void removeClaimFromWorldPosition(int x, int z) {
+        GridCoord coord = GridCoord.getFromWorldPosition(x, z);
+        claims.remove(coord);
+    }
+
+    public List<GridCoord> getClaims() {
+        return claims;
+    }
+
+    @Override
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
         list.add(uuid.toString());
@@ -195,6 +231,7 @@ public class Realm implements Printable, Readable {
         return printer.print(list);
     }
 
+    @Override
     public Object read(ObjectReader<?> reader, Object object) throws ReadException {
         List<Object> list = (ArrayList<Object>) reader.read(object);
         Realm realm = new Realm(UUID.fromString((String)list.get(0)));
