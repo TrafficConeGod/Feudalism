@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.Lua;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -92,6 +91,15 @@ public class Config {
     public static void load(String luaCode) throws FeudalismException {
         Globals globals = JsePlatform.standardGlobals();
         LuaValue table = globals.load(luaCode).call();
+        if (!isValid(table, getConfigSchema())) {
+            throw new FeudalismException("Unable to load lua config, invalid formatting.");
+        }
+        configTable = table;
+    }
+
+    public static void loadFile(String path) throws FeudalismException {
+        Globals globals = JsePlatform.standardGlobals();
+        LuaValue table = globals.loadfile(path).call();
         if (!isValid(table, getConfigSchema())) {
             throw new FeudalismException("Unable to load lua config, invalid formatting.");
         }

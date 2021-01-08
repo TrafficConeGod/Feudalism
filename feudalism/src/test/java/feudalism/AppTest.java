@@ -1,6 +1,11 @@
 package feudalism;
 
 import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.junit.Test;
 
 import feudalism.object.Realm;
@@ -51,11 +56,17 @@ public class AppTest {
         assertEquals(true, val.equals(LuaValue.valueOf("Test string")));
     }
 
-    @Test
-    public void configTest() throws FeudalismException {
-        Config.load("return { realm = { coord_grid_size = 16 } }");
-        Config.getInt("realm.coord_grid_size");
-    }
+    // @Test
+    // public void configTest() throws FeudalismException, IOException {
+    //     File configFile = new File("config.lua");
+    //     if (!configFile.exists()) {
+    //         FileWriter writer = new FileWriter("config.lua");
+    //         writer.write(Config.generate());
+    //         writer.close();
+    //     }
+    //     Config.loadFile("config.lua");
+    //     System.out.println(Config.getInt("realm.coord_grid_size"));
+    // }
 
     // @Test
     // public void azraelFridgeTest() throws FridgeException {

@@ -4,7 +4,7 @@ mv target/feudalism-0.1.jar deps/shade
 cd deps/shade
 unzip -qq feudalism-0.1.jar
 rm feudalism-0.1.jar
-zip -qq -r feudalism-0.1.jar META-INF feudalism plugin.yml ca org
+zip -qq -r feudalism-0.1.jar *
 rm META-INF -r
 rm feudalism -r
 rm plugin.yml

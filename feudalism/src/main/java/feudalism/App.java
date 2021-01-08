@@ -27,6 +27,11 @@ public class App extends JavaPlugin {
         for (Realm realm : Registry.getInstance().getTopRealms()) {
             System.out.println(realm);
         }
+        try {
+            System.out.println(Config.getInt("realm.coord_grid_size"));
+        } catch (FeudalismException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initFilesystem() throws FeudalismException {
@@ -39,11 +44,14 @@ public class App extends JavaPlugin {
         if (!configFile.exists()) {
             try {
                 FileWriter writer = new FileWriter("plugins/feudalism/config.lua");
+                writer.write(Config.generate());
+                writer.close();
             } catch (IOException e) {
                 configFile.delete();
                 throw new FeudalismException("IOException: " + e.getMessage());
             }
         }
+        Config.loadFile("plugins/feudalism/config.lua");
         // registry and fridge setup
         File fridgeFile = new File("plugins/feudalism/fridge.json");
         if (!fridgeFile.exists()) {
