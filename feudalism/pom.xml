@@ -49,6 +49,13 @@
       <scope>system</scope>
       <systemPath>${project.basedir}/deps/azrael-json.jar</systemPath>
     </dependency>
+    <dependency>
+      <groupId>com.github</groupId>
+      <artifactId>jse</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/deps/luaj-jse.jar</systemPath>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>

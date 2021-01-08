@@ -34,6 +34,17 @@ public class App extends JavaPlugin {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+        // config setup
+        File configFile = new File("plugins/feudalism/config.lua");
+        if (!configFile.exists()) {
+            try {
+                FileWriter writer = new FileWriter("plugins/feudalism/config.lua");
+            } catch (IOException e) {
+                configFile.delete();
+                throw new FeudalismException("IOException: " + e.getMessage());
+            }
+        }
+        // registry and fridge setup
         File fridgeFile = new File("plugins/feudalism/fridge.json");
         if (!fridgeFile.exists()) {
             try {

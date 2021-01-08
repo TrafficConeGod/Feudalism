@@ -10,6 +10,10 @@ import ca.uqac.lif.azrael.json.JsonPrinter;
 import ca.uqac.lif.azrael.json.JsonReader;
 import ca.uqac.lif.json.JsonElement;
 
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
+
 public class AppTest {
     @Test
     public void overlordSubjectLinkingTest() {
@@ -38,6 +42,19 @@ public class AppTest {
         assertEquals(true, realm.getUuid().equals(realmReconstruct.getUuid()));
         assertEquals(true, realm.getSubjects().size() == realmReconstruct.getSubjects().size());
         assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
+    }
+
+    @Test
+    public void luaTest() {
+        Globals globals = JsePlatform.standardGlobals();
+        LuaValue val = globals.load("return \"Test string\"").call();
+        assertEquals(true, val.equals(LuaValue.valueOf("Test string")));
+    }
+
+    @Test
+    public void configTest() throws FeudalismException {
+        Config.load("return { realm = { coord_grid_size = 16 } }");
+        Config.getInt("realm.coord_grid_size");
     }
 
     // @Test

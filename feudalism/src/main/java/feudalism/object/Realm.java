@@ -39,9 +39,16 @@ public class Realm implements Printable, Readable {
 
     public Realm(UUID owner, String name) {
         uuid = UUID.randomUUID();
-        this.setOwner(owner);
-        this.setName(name);
+        setOwner(owner);
+        setName(name);
         Registry.getInstance().addTopRealm(this);
+    }
+
+    public Realm(UUID owner, String name, Realm overlord) {
+        uuid = UUID.randomUUID();
+        setOwner(owner);
+        setName(name);
+        setOverlord(overlord);
     }
 
     public UUID getUuid() {

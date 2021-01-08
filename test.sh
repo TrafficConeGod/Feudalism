@@ -1,0 +1,2 @@
+cd feudalism
+mvn test
