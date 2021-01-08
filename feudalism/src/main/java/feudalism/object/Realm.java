@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.Location;
 
 import ca.uqac.lif.azrael.ObjectPrinter;
@@ -81,6 +82,10 @@ public class Realm implements Printable, Readable {
 
     public UUID getOwner() {
         return owner;
+    }
+
+    public Player getOwnerPlayer() {
+        return Bukkit.getPlayer(getOwner());
     }
 
     public void setOwner(UUID owner) {
@@ -255,7 +260,18 @@ public class Realm implements Printable, Readable {
         destroy();
     }
 
-    @Override
+    public String getProps() {
+        return String.format("UUID: %s\nName: %s\nOwner: %s\nOverlord: %s\nSubjects: %s\nMembers: %s\nClaims: %s",
+            getUuid().toString(),
+            getName(),
+            hasOwner() ? getOwnerPlayer().getName() : "None",
+            hasOverlord() ? getOverlord().getName() : "None",
+            getSubjects().size(),
+            members.size(),
+            claims.size()
+        );
+    }
+
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
         list.add(uuid.toString());
@@ -266,12 +282,17 @@ public class Realm implements Printable, Readable {
         }
         list.add(members);
         list.add(name);
+        list.add(claims);
+        list.add(hasOwner());
+        if (hasOwner()) {
+            list.add(getOwner().toString());
+        }
         return printer.print(list);
     }
 
-    @Override
     public Object read(ObjectReader<?> reader, Object object) throws ReadException {
         List<Object> list = (ArrayList<Object>) reader.read(object);
+        System.out.println(list.get(5));
         Realm realm = new Realm(UUID.fromString((String)list.get(0)));
         realm.setName((String)list.get(3));
         List<Realm> subjects = (ArrayList<Realm>) list.get(1);
@@ -281,6 +302,13 @@ public class Realm implements Printable, Readable {
         List<String> members = (ArrayList<String>) list.get(2);
         for (String member : members) {
             realm.addMember(UUID.fromString(member));
+        }
+        List<GridCoord> claims = (ArrayList<GridCoord>) list.get(4);
+        for (GridCoord coord : claims) {
+            realm.addClaim(coord);
+        }
+        if ((boolean) list.get(5)) {
+            realm.setOwner(UUID.fromString((String) list.get(6)));
         }
         return realm;
     }

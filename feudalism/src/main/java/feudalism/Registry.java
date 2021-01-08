@@ -40,6 +40,10 @@ public class Registry implements Printable, Readable {
         this.fridge = fridge;
     }
 
+    public JsonFileFridge getFridge() {
+        return fridge;
+    }
+
     public void initWorld() throws FeudalismException {
         String worldName = Config.getString("realm.world");
         world = Bukkit.getWorld(worldName);

@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.ReadException;
@@ -52,6 +53,17 @@ public class AppTest {
         realmReconstruct.destroyTree();
         realm.destroyTree();
         r2.destroyTree();
+    }
+
+    @Test
+    public void azraelGridCoordTest() throws PrintException, ReadException {
+        GridCoord coord = GridCoord.getFromGridPosition(100, 100);
+        JsonPrinter printer = new JsonPrinter();
+        JsonReader reader = new JsonReader();
+        JsonElement elem = printer.print(coord);
+        GridCoord coordR = (GridCoord) reader.read(elem);
+        System.out.println(coord);
+        System.out.println(coordR);
     }
 
     @Test

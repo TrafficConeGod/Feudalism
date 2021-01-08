@@ -7,3 +7,15 @@ commands:
     description: Realm command
     usage: /<command>
     permission: feudalism.realm 
+  admin:
+    description: Admin command
+    usage: /<command>
+    permission: feudalism.admin 
+
+permissions:
+  feudalism.realm:
+    description: Realm
+    default: true
+  feudalism.admin:
+    description: Realm
+    default: op

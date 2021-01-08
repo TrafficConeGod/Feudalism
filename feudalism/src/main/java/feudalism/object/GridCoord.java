@@ -20,6 +20,11 @@ public class GridCoord implements Printable, Readable {
     private boolean hasOwner = false;
     private Realm owner;
 
+    // i have to include this because azrael simply will not work without having a constructor with no args
+    public GridCoord() {
+
+    }
+
     private static int getSize() {
         return Config.getInt("grid_coord.size");
     }
@@ -95,6 +100,10 @@ public class GridCoord implements Printable, Readable {
     }
 
     @Override
+    public String toString() {
+        return x + ", " + z;
+    }
+
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Integer> list = new ArrayList<>();
         list.add(getGridX());
@@ -102,9 +111,8 @@ public class GridCoord implements Printable, Readable {
         return printer.print(list);
     }
 
-    @Override
     public Object read(ObjectReader<?> reader, Object object) throws ReadException {
         List<Integer> list = (List<Integer>) reader.read(object);
-        return new GridCoord(list.get(0), list.get(1));
+        return GridCoord.getFromGridPosition(list.get(0), list.get(1));
     }
 }

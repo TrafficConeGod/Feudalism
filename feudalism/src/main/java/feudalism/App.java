@@ -11,6 +11,7 @@ import ca.uqac.lif.azrael.fridge.FridgeException;
 import ca.uqac.lif.azrael.json.JsonFileFridge;
 import ca.uqac.lif.azrael.json.JsonPrinter;
 import ca.uqac.lif.json.JsonElement;
+import feudalism.command.admin.AdminCommand;
 import feudalism.command.realm.RealmCommand;
 import feudalism.object.Realm;
 
@@ -25,7 +26,7 @@ public class App extends JavaPlugin {
         }
         initCommands();
         for (Realm realm : Registry.getInstance().getTopRealms()) {
-            System.out.println(realm);
+            System.out.println(realm.getProps());
         }
     }
 
@@ -77,6 +78,7 @@ public class App extends JavaPlugin {
     }
 
     private void initCommands() {
+        this.getCommand("admin").setExecutor(new AdminCommand());
         this.getCommand("realm").setExecutor(new RealmCommand());
     }
 

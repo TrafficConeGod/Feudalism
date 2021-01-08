@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import feudalism.Chat;
 import feudalism.command.SubcommandBase;
+import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 
 public class CreateSubcommand extends SubcommandBase {
@@ -33,7 +34,8 @@ public class CreateSubcommand extends SubcommandBase {
         String name = args[0];
         Realm realm = new Realm(player.getUniqueId(), name);
         realm.addClaimFromWorldPosition((int) player.getLocation().getX(), (int) player.getLocation().getZ());
-        Chat.sendMessage(player, String.format("Created realm with name %s", realm.getName()));
+        GridCoord claim = realm.getClaims().get(0);
+        Chat.sendMessage(player, String.format("Created realm with name %s at: %s, %s", realm.getName(), claim.getGridX(), claim.getGridZ()));
         return true;
     }
 }
