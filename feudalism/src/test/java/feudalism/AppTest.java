@@ -30,6 +30,8 @@ public class AppTest {
         r2.removeOverlord();
         assertEquals(false, r2.hasOverlord());
         assertEquals(false, r1.getSubjects().size() > 0);
+        r1.destroyTree();
+        r2.destroyTree();
     }
 
     @Test
@@ -47,6 +49,9 @@ public class AppTest {
         assertEquals(true, realm.getUuid().equals(realmReconstruct.getUuid()));
         assertEquals(true, realm.getSubjects().size() == realmReconstruct.getSubjects().size());
         assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
+        realmReconstruct.destroyTree();
+        realm.destroyTree();
+        r2.destroyTree();
     }
 
     @Test
@@ -62,8 +67,11 @@ public class AppTest {
         realm.addClaimFromWorldPosition(0, 0);
         realm.addClaimFromWorldPosition(0, 1);
         realm.addClaimFromWorldPosition(1, 1);
-        realm.addClaimFromWorldPosition(1, 0);
+        realm.addClaimFromWorldPosition(1, 1);
         assertEquals(true, realm.getClaims().size() == 1);
+        int size = Registry.getInstance().getRealms().size();
+        realm.removeClaimFromGridPosition(0, 0);
+        assertEquals(true, Registry.getInstance().getRealms().size() == size - 1);
     }
 
     // @Test

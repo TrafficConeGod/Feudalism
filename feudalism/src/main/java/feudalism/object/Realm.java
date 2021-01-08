@@ -36,11 +36,13 @@ public class Realm implements Printable, Readable {
 
     public Realm() {
         uuid = UUID.randomUUID();
+        Registry.getInstance().addRealm(this);
         Registry.getInstance().addTopRealm(this);
     }
 
     public Realm(UUID uuid) {
         this.uuid = uuid;
+        Registry.getInstance().addRealm(this);
         Registry.getInstance().addTopRealm(this);
     }
 
@@ -48,6 +50,7 @@ public class Realm implements Printable, Readable {
         uuid = UUID.randomUUID();
         setOwner(owner);
         setName(name);
+        Registry.getInstance().addRealm(this);
         Registry.getInstance().addTopRealm(this);
     }
 
@@ -56,6 +59,7 @@ public class Realm implements Printable, Readable {
         setOwner(owner);
         setName(name);
         setOverlord(overlord);
+        Registry.getInstance().addRealm(this);
     }
 
     public UUID getUuid() {
@@ -226,10 +230,29 @@ public class Realm implements Printable, Readable {
 
     public void removeClaim(GridCoord coord) {
         claims.remove(coord);
+        if (claims.size() == 0) {
+            destroy();
+        }
     }
 
     public boolean hasClaim(GridCoord coord) {
         return claims.contains(coord);
+    }
+
+    public void destroy() {
+        for (GridCoord coord : getClaims()) {
+            coord.destroy();
+        }
+        Registry.getInstance().removeTopRealm(this);
+        Registry.getInstance().removeRealm(this);
+    }
+
+    public void destroyTree() {
+        for (Realm subject : getSubjects()) {
+            subject.destroyTree();
+        }
+        subjects = new ArrayList<>();
+        destroy();
     }
 
     @Override

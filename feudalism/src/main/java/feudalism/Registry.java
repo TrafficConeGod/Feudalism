@@ -32,6 +32,7 @@ public class Registry implements Printable, Readable {
 
     private JsonFileFridge fridge;
     private List<Realm> topRealms = new ArrayList<>();
+    private List<Realm> realms = new ArrayList<>();
     private Map<Integer, Map<Integer, GridCoord>> gridCoordCache = new HashMap<>();
     private World world;
 
@@ -61,6 +62,18 @@ public class Registry implements Printable, Readable {
 
     public List<Realm> getTopRealms() {
         return topRealms;
+    }
+
+    public void addRealm(Realm realm) {
+        realms.add(realm);
+    }
+
+    public void removeRealm(Realm realm) {
+        realms.remove(realm);
+    }
+
+    public List<Realm> getRealms() {
+        return realms;
     }
 
     public boolean hasGridCoord(int x, int z) {

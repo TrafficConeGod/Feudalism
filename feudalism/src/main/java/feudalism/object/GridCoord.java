@@ -90,6 +90,10 @@ public class GridCoord implements Printable, Readable {
         return getFromWorldPosition((int) location.getX(), (int) location.getZ());
     }
 
+    public void destroy() {
+        Registry.getInstance().removeGridCoord(this);
+    }
+
     @Override
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Integer> list = new ArrayList<>();
