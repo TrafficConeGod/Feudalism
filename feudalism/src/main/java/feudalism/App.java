@@ -27,11 +27,6 @@ public class App extends JavaPlugin {
         for (Realm realm : Registry.getInstance().getTopRealms()) {
             System.out.println(realm);
         }
-        try {
-            System.out.println(Config.getInt("realm.coord_grid_size"));
-        } catch (FeudalismException e) {
-            e.printStackTrace();
-        }
     }
 
     private void initFilesystem() throws FeudalismException {

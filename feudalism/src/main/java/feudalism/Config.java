@@ -82,7 +82,8 @@ public class Config {
                     if (luaVal.type() != 1) {
                         return false;
                     }
-                } else if (val.getClass() == Integer.class || val.getClass() == Float.class || val.getClass() == Double.class) {
+                } else if (val.getClass() == Integer.class || val.getClass() == Float.class
+                        || val.getClass() == Double.class) {
                     if (luaVal.type() != 3) {
                         return false;
                     }
@@ -143,15 +144,30 @@ public class Config {
         throw new FeudalismException(String.format("No config value with path %s", path));
     }
 
-    public static boolean getBoolean(String path) throws FeudalismException {
-        return (boolean) get(path, 1);
+    public static boolean getBoolean(String path) {
+        try {
+            return (boolean) get(path, 1);
+        } catch (FeudalismException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    public static int getInt(String path) throws FeudalismException {
-        return (int) get(path, 3);
+    public static int getInt(String path) {
+        try {
+            return (int) get(path, 3);
+        } catch (FeudalismException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
-    public static String getString(String path) throws FeudalismException {
-        return (String) get(path, 4);
+    public static String getString(String path) {
+        try {
+            return (String) get(path, 4);
+        } catch (FeudalismException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

@@ -191,30 +191,45 @@ public class Realm implements Printable, Readable {
 
     public void addClaimFromGridPosition(int x, int z) {
         GridCoord coord = GridCoord.getFromGridPosition(x, z);
-        if (!claims.contains(coord)) {
-            claims.add(coord);
+        if (!hasClaim(coord)) {
+            addClaim(coord);
         }
     }
 
     public void removeClaimFromGridPosition(int x, int z) {
         GridCoord coord = GridCoord.getFromGridPosition(x, z);
-        claims.remove(coord);
+        removeClaim(coord);
     }
 
     public void addClaimFromWorldPosition(int x, int z) {
         GridCoord coord = GridCoord.getFromWorldPosition(x, z);
-        if (!claims.contains(coord)) {
-            claims.add(coord);
+        if (!hasClaim(coord)) {
+            addClaim(coord);
         }
     }
 
     public void removeClaimFromWorldPosition(int x, int z) {
         GridCoord coord = GridCoord.getFromWorldPosition(x, z);
-        claims.remove(coord);
+        removeClaim(coord);
     }
 
     public List<GridCoord> getClaims() {
         return claims;
+    }
+
+    public void addClaim(GridCoord coord) {
+        claims.add(coord);
+        if (!coord.hasOwner() || coord.getOwner() != this) {
+            coord.setOwner(this);
+        }
+    }
+
+    public void removeClaim(GridCoord coord) {
+        claims.remove(coord);
+    }
+
+    public boolean hasClaim(GridCoord coord) {
+        return claims.contains(coord);
     }
 
     @Override
