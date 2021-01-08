@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.UUID;
 
 import org.junit.Test;
 
@@ -39,6 +40,7 @@ public class AppTest {
     public void azraelSerializationTest() throws PrintException, ReadException {
         Realm realm = new Realm();
         realm.setName("Test");
+        realm.setOwner(UUID.randomUUID());
         Realm r2 = new Realm();
         r2.setName("Test2");
         r2.setOverlord(realm);
@@ -50,6 +52,8 @@ public class AppTest {
         assertEquals(true, realm.getUuid().equals(realmReconstruct.getUuid()));
         assertEquals(true, realm.getSubjects().size() == realmReconstruct.getSubjects().size());
         assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
+        assertEquals(true, realm.getOwner().equals(realmReconstruct.getOwner()));
+        assertEquals(true, realm.getClaims().size() == realmReconstruct.getClaims().size());
         realmReconstruct.destroyTree();
         realm.destroyTree();
         r2.destroyTree();
@@ -62,8 +66,8 @@ public class AppTest {
         JsonReader reader = new JsonReader();
         JsonElement elem = printer.print(coord);
         GridCoord coordR = (GridCoord) reader.read(elem);
-        System.out.println(coord);
-        System.out.println(coordR);
+        assertEquals(true, coord.getGridX() == coordR.getGridX());
+        assertEquals(true, coord.getGridZ() == coordR.getGridZ());
     }
 
     @Test

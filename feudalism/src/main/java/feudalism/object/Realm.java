@@ -292,7 +292,6 @@ public class Realm implements Printable, Readable {
 
     public Object read(ObjectReader<?> reader, Object object) throws ReadException {
         List<Object> list = (ArrayList<Object>) reader.read(object);
-        System.out.println(list.get(5));
         Realm realm = new Realm(UUID.fromString((String)list.get(0)));
         realm.setName((String)list.get(3));
         List<Realm> subjects = (ArrayList<Realm>) list.get(1);
