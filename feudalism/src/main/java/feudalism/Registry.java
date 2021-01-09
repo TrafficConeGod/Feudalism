@@ -75,10 +75,9 @@ public class Registry implements Printable, Readable {
         }
     }
 
-    public void addTopRealm(Realm realm) {
+    public void addTopRealm(Realm realm) throws FeudalismException {
         if (realm.hasOverlord()) {
-            System.out.println("Can not add top realm that has an overlord");
-            return;
+            throw new FeudalismException("Can not add top realm that has an overlord");
         }
         topRealms.add(realm);
     }
@@ -205,15 +204,19 @@ public class Registry implements Printable, Readable {
 
     @Override
     public Object read(ObjectReader<?> reader, Object object) throws ReadException {
-        List<Object> list = (ArrayList<Object>) reader.read(object);
-        Registry registry = new Registry();
-        for (Realm realm : (ArrayList<Realm>) list.get(0)) {
-            registry.addTopRealm(realm);
+        try {
+            List<Object> list = (ArrayList<Object>) reader.read(object);
+            Registry registry = new Registry();
+            for (Realm realm : (ArrayList<Realm>) list.get(0)) {
+                registry.addTopRealm(realm);
+            }
+            for (Siege siege : (ArrayList<Siege>) list.get(1)) {
+                registry.addSiege(siege);
+            }
+            return registry;
+        } catch (FeudalismException e) {
+            throw new ReadException(e);
         }
-        for (Siege siege : (ArrayList<Siege>) list.get(1)) {
-            registry.addSiege(siege);
-        }
-        return registry;
     }
 
 }

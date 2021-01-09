@@ -35,19 +35,19 @@ public class Realm implements Printable, Readable {
 
     private List<GridCoord> claims = new ArrayList<>();
 
-    public Realm() {
+    public Realm() throws FeudalismException {
         uuid = UUID.randomUUID();
         Registry.getInstance().addRealm(this);
         Registry.getInstance().addTopRealm(this);
     }
 
-    public Realm(UUID uuid) {
+    public Realm(UUID uuid) throws FeudalismException {
         this.uuid = uuid;
         Registry.getInstance().addRealm(this);
         Registry.getInstance().addTopRealm(this);
     }
 
-    public Realm(UUID owner, String name) {
+    public Realm(UUID owner, String name) throws FeudalismException {
         uuid = UUID.randomUUID();
         setOwner(owner);
         setName(name);
@@ -55,7 +55,7 @@ public class Realm implements Printable, Readable {
         Registry.getInstance().addTopRealm(this);
     }
 
-    public Realm(UUID owner, String name, Realm overlord) {
+    public Realm(UUID owner, String name, Realm overlord) throws FeudalismException {
         uuid = UUID.randomUUID();
         setOwner(owner);
         setName(name);
@@ -97,7 +97,7 @@ public class Realm implements Printable, Readable {
         return hasOverlord;
     }
 
-    public void removeOverlord() {
+    public void removeOverlord() throws FeudalismException {
         boolean hadOverlord = hasOverlord();
         hasOverlord = false;
         // if the subject had an overlord then remove the subject from the overlords
@@ -115,14 +115,12 @@ public class Realm implements Printable, Readable {
         return overlord;
     }
 
-    public void setOverlord(Realm overlord) {
+    public void setOverlord(Realm overlord) throws FeudalismException {
         if (getDescendantSubjects().contains(overlord)) {
-            System.out.println("Can not set overlord if already overlord");
-            return;
+            throw new FeudalismException("Can not set overlord if already overlord");
         }
         if (Registry.getInstance().isInConflict(overlord, this)) {
-            System.out.println("Can't add a subject which is in conflict with the overlord");
-            return;
+            throw new FeudalismException("Can't add a subject which is in conflict with the overlord");
         }
         boolean hadOverlord = hasOverlord();
         Realm oldOverlord = getOverlord();
@@ -145,14 +143,12 @@ public class Realm implements Printable, Readable {
         return subjects;
     }
 
-    public void addSubject(Realm subject) {
+    public void addSubject(Realm subject) throws FeudalismException {
         if (getDescendantSubjects().contains(subject) || subject.getDescendantSubjects().contains(this)) {
-            System.out.println("Can not add subject if it already is a descendnat subject or is a subject of this already");
-            return;
+            throw new FeudalismException("Can not add subject if it already is a descendnat subject or is a subject of this already");
         }
         if (Registry.getInstance().isInConflict(this, subject)) {
-            System.out.println("Can't add a subject which is in conflict with the overlord");
-            return;
+            throw new FeudalismException("Can't add a subject which is in conflict with the overlord");
         }
         subjects.add(subject);
         // if the subject doesn't have this overlord then set it's overlord to this
@@ -169,10 +165,9 @@ public class Realm implements Printable, Readable {
         return getDescendantSubjects().contains(subject);
     }
 
-    public void removeSubject(Realm subject) {
+    public void removeSubject(Realm subject) throws FeudalismException {
         if (!hasSubject(subject)) {
-            System.out.println("Can not remove subject that is not a subject of this");
-            return;
+            throw new FeudalismException("Can not remove subject that is not a subject of this");
         }
         subjects.remove(subject);
         // if the subject does have an overlord then remove it
@@ -303,24 +298,28 @@ public class Realm implements Printable, Readable {
     }
 
     public Object read(ObjectReader<?> reader, Object object) throws ReadException {
-        List<Object> list = (ArrayList<Object>) reader.read(object);
-        Realm realm = new Realm(UUID.fromString((String)list.get(0)));
-        realm.setName((String)list.get(3));
-        List<Realm> subjects = (ArrayList<Realm>) list.get(1);
-        for (Realm subject : subjects) {
-            realm.addSubject(subject);
+        try {
+            List<Object> list = (ArrayList<Object>) reader.read(object);
+            Realm realm = new Realm(UUID.fromString((String)list.get(0)));
+            realm.setName((String)list.get(3));
+            List<Realm> subjects = (ArrayList<Realm>) list.get(1);
+            for (Realm subject : subjects) {
+                realm.addSubject(subject);
+            }
+            List<String> members = (ArrayList<String>) list.get(2);
+            for (String member : members) {
+                realm.addMember(UUID.fromString(member));
+            }
+            List<GridCoord> claims = (ArrayList<GridCoord>) list.get(4);
+            for (GridCoord coord : claims) {
+                realm.addClaim(coord);
+            }
+            if ((boolean) list.get(5)) {
+                realm.setOwner(UUID.fromString((String) list.get(6)));
+            }
+            return realm;
+        } catch (FeudalismException e) {
+            throw new ReadException(e);
         }
-        List<String> members = (ArrayList<String>) list.get(2);
-        for (String member : members) {
-            realm.addMember(UUID.fromString(member));
-        }
-        List<GridCoord> claims = (ArrayList<GridCoord>) list.get(4);
-        for (GridCoord coord : claims) {
-            realm.addClaim(coord);
-        }
-        if ((boolean) list.get(5)) {
-            realm.setOwner(UUID.fromString((String) list.get(6)));
-        }
-        return realm;
     }
 }

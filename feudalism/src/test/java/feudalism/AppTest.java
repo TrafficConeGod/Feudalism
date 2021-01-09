@@ -100,7 +100,10 @@ public class AppTest {
             Realm r1 = new Realm();
             Realm r2 = new Realm();
             Siege siege = new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
-            r2.setOverlord(r1);
+            try {
+                r2.setOverlord(r1);
+                assertEquals(true, false);
+            } catch (FeudalismException e) {}
             assertEquals(false, r2.hasOverlord());
             siege.win(r1, new ArrayList<>());
             assertEquals(true, r2.getOverlord() == r1);

@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import feudalism.Chat;
+import feudalism.FeudalismException;
 import feudalism.command.SubcommandBase;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
@@ -11,11 +12,11 @@ import feudalism.object.Realm;
 public class CreateSubcommand extends SubcommandBase {
     @Override
     protected String[] getAliases() {
-        return new String[]{ "create", "new" };
+        return new String[] { "create", "new" };
     }
 
     @Override
-    public boolean onExecute(CommandSender sender, String[] args) {
+    public boolean onExecute(CommandSender sender, String[] args) throws FeudalismException {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (!player.isOnline()) {

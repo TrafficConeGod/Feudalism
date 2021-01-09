@@ -6,12 +6,14 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import feudalism.FeudalismException;
+
 public class SubcommandBase {
     protected String[] getAliases() {
         return new String[0];
     }
 
-    protected boolean onExecute(CommandSender sender, String[] args) {
+    protected boolean onExecute(CommandSender sender, String[] args) throws FeudalismException {
         return false;
     }
 
