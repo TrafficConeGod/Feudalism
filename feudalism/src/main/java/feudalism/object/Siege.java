@@ -18,15 +18,17 @@ public class Siege implements Printable, Readable {
     private Realm defender;
     private List<Realm> attackerAllies = new ArrayList<Realm>();
     private List<Realm> defenderAllies = new ArrayList<Realm>();
+    private SiegeGoal goal;
 
     // please azrael
     public Siege() {
 
     }
 
-    public Siege(Realm attacker, Realm defender) {
+    public Siege(Realm attacker, Realm defender, SiegeGoal goal) {
         this.attacker = attacker;
         this.defender = defender;
+        this.goal = goal;
         Registry.getInstance().addSiege(this);
     }
 
@@ -87,14 +89,12 @@ public class Siege implements Printable, Readable {
         return getAttackers().contains(realm) || getDefenders().contains(realm);
     }
 
-    public void win(Realm side) {
+    public void win(Realm side, List<String> propValues) throws FeudalismException {
         destroy();
         if (side == attacker) {
-            // temporary
-            defender.setOverlord(attacker);
+            goal.execute(attacker, defender, propValues);
         } else {
-            // temporary
-            attacker.setOverlord(defender);
+            // nothing here yet
         }
     }
 
@@ -113,6 +113,7 @@ public class Siege implements Printable, Readable {
             defenderAllies.add(ally.getUuid().toString());
         }
         list.add(defenderAllies);
+        // TODO: Add other siege properties
         return printer.print(list);
     }
 
@@ -122,8 +123,10 @@ public class Siege implements Printable, Readable {
         try {
             Realm attacker = Registry.getInstance().getRealmByUuid(UUID.fromString((String) list.get(0)));
             Realm defender = Registry.getInstance().getRealmByUuid(UUID.fromString((String) list.get(1)));
-            Siege siege = new Siege(attacker, defender);
-            return siege;
+            // Siege siege = new Siege(attacker, defender);
+            // TODO: Add other siege properties
+            // return siege;
+            return null;
         } catch (FeudalismException e) {
             e.printStackTrace();
             throw new ReadException(e);

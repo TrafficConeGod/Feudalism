@@ -96,14 +96,16 @@ public class AppTest {
 
     @Test
     public void siegeTest() throws FeudalismException {
-        Realm r1 = new Realm();
-        Realm r2 = new Realm();
-        Siege siege = new Siege(r1, r2);
-        r2.setOverlord(r1);
-        assertEquals(false, r2.hasOverlord());
-        siege.win(r1);
-        assertEquals(true, r2.getOverlord() == r1);
-        Registry.resetInstance();
+        if (Registry.getInstance().hasSiegeGoal("subjugate")) {
+            Realm r1 = new Realm();
+            Realm r2 = new Realm();
+            Siege siege = new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
+            r2.setOverlord(r1);
+            assertEquals(false, r2.hasOverlord());
+            siege.win(r1, new ArrayList<>());
+            assertEquals(true, r2.getOverlord() == r1);
+            Registry.resetInstance();
+        }
     }
 
     @Test
