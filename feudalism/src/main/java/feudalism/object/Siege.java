@@ -34,7 +34,7 @@ public class Siege implements Printable, Readable {
         Registry.getInstance().removeSiege(this);
     }
 
-    private List<Realm> getAttackers() {
+    public List<Realm> getAttackers() {
         List<Realm> attackers = new ArrayList<>();
         attackers.add(attacker);
         attackers.addAll(attacker.getDescendantSubjects());
@@ -45,7 +45,7 @@ public class Siege implements Printable, Readable {
         return attackers;
     }
 
-    private List<Realm> getDefenders() {
+    public List<Realm> getDefenders() {
         List<Realm> defenders = new ArrayList<>();
         defenders.add(defender);
         defenders.addAll(defender.getDescendantSubjects());
@@ -88,6 +88,7 @@ public class Siege implements Printable, Readable {
     }
 
     public void win(Realm side) {
+        destroy();
         if (side == attacker) {
             // temporary
             defender.setOverlord(attacker);
@@ -95,7 +96,6 @@ public class Siege implements Printable, Readable {
             // temporary
             attacker.setOverlord(defender);
         }
-        destroy();
     }
 
     @Override

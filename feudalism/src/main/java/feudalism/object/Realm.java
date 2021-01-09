@@ -120,6 +120,10 @@ public class Realm implements Printable, Readable {
             System.out.println("Can not set overlord if already overlord");
             return;
         }
+        if (Registry.getInstance().isInConflict(overlord, this)) {
+            System.out.println("Can't add a subject which is in conflict with the overlord");
+            return;
+        }
         boolean hadOverlord = hasOverlord();
         Realm oldOverlord = getOverlord();
         hasOverlord = true;
@@ -144,6 +148,10 @@ public class Realm implements Printable, Readable {
     public void addSubject(Realm subject) {
         if (getDescendantSubjects().contains(subject) || subject.getDescendantSubjects().contains(this)) {
             System.out.println("Can not add subject if it already is a descendnat subject or is a subject of this already");
+            return;
+        }
+        if (Registry.getInstance().isInConflict(this, subject)) {
+            System.out.println("Can't add a subject which is in conflict with the overlord");
             return;
         }
         subjects.add(subject);

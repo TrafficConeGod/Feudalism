@@ -92,10 +92,12 @@ public class AppTest {
     }
 
     @Test
-    public void warTest() throws FeudalismException {
+    public void siegeTest() throws FeudalismException {
         Realm r1 = new Realm();
         Realm r2 = new Realm();
         Siege siege = new Siege(r1, r2);
+        r2.setOverlord(r1);
+        assertEquals(false, r2.hasOverlord());
         siege.win(r1);
         assertEquals(true, r2.getOverlord() == r1);
         Registry.resetInstance();

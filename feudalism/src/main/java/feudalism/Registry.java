@@ -147,6 +147,18 @@ public class Registry implements Printable, Readable {
     public World getWorld() {
         return world;
     }
+    
+    // TODO: Particularly inefficient function
+    public boolean isInConflict(Realm realm1, Realm realm2) {
+        for (Siege siege : getSieges()) {
+            List<Realm> attackers = siege.getAttackers();
+            List<Realm> defenders = siege.getDefenders();
+            if ((attackers.contains(realm1) && defenders.contains(realm2)) || (attackers.contains(realm1) && defenders.contains(realm2))) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static boolean isJUnitTest() {  
         for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
