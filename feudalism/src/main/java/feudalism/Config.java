@@ -37,20 +37,36 @@ public class Config {
             // siege config
             {
                 Map<String, Object> map = new HashMap<>();
+                List<Object> list = new ArrayList<>();
                 {
                     Map<String, Object> submap = new HashMap<>();
                     submap.put("name", "ruler_change");
                     submap.put("display_name", "Demand Ruler Change");
                     {
-                        List<Object> list = new ArrayList<>();
-                        list.add("new_ruler");
-                        submap.put("props", list);
+                        List<Object> sublist = new ArrayList<>();
+                        sublist.add("new_ruler");
+                        submap.put("props", sublist);
                     }
                     submap.put("on_peace", new ConfigFunction("victor, loser, props", "local new_ruler = Util.getPlayerUuidByName(props.new_ruler);\nloser.setOwner(new_ruler);"));
-                    List<Object> list = new ArrayList<>();
                     list.add(submap);
-                    map.put("goals", list);
                 }
+                {
+                    Map<String, Object> submap = new HashMap<>();
+                    submap.put("name", "subjugate");
+                    submap.put("display_name", "Subjugate");
+                    submap.put("props", new ArrayList<>());
+                    submap.put("on_peace", new ConfigFunction("victor, loser", "victor.addSubject(loser);"));
+                    list.add(submap);
+                }
+                {
+                    Map<String, Object> submap = new HashMap<>();
+                    submap.put("name", "personal_union");
+                    submap.put("display_name", "Demand Personal Union");
+                    submap.put("props", new ArrayList<>());
+                    submap.put("on_peace", new ConfigFunction("victor, loser", "loser.setOwner(victor.getOwner());"));
+                    list.add(submap);
+                }
+                map.put("goals", list);
                 configSchema.put("siege", map);
             }
         }
@@ -201,7 +217,12 @@ public class Config {
            getGlobals = JsePlatform.standardGlobals();
            getGlobals.set("Config", configTable);
         }
-        LuaValue val = getGlobals.load(String.format("return Config.%s", luaCode)).call();
+        String repl = "";
+        if (luaCode.charAt(0) == '#') {
+            repl = "#";
+            luaCode = luaCode.substring(1);
+        }
+        LuaValue val = getGlobals.load(String.format("return %sConfig.%s", repl, luaCode)).call();
         if (val.type() != type) {
             throw new FeudalismException("Config value type does not match expected type");
         }
@@ -213,28 +234,6 @@ public class Config {
             return val.checkjstring();
         }
         throw new FeudalismException(String.format("No config value with path %s", luaCode));
-        // LuaValue table = configTable;
-        // for (String pathDown : split) {
-        //     LuaValue val = table.get(pathDown);
-        //     if (val.type() == 0) {
-        //         throw new FeudalismException(String.format("No config value with path %s", path));
-        //     }
-        //     if (val.type() == 5) {
-        //         table = val;
-        //     } else {
-        //         if (val.type() != type) {
-        //             throw new FeudalismException("Config value type does not match expected type");
-        //         }
-        //         if (val.type() == 1) {
-        //             return val.checkboolean();
-        //         } else if (val.type() == 3) {
-        //             return val.checkint();
-        //         } else if (val.type() == 4) {
-        //             return val.checkjstring();
-        //         }
-        //     }
-        // }
-        // throw new FeudalismException(String.format("No config value with path %s", path));
     }
 
     public static boolean getBoolean(String path) {

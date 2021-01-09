@@ -105,8 +105,7 @@ public class AppTest {
 
     @Test
     public void configTest() throws FeudalismException {
-        Config.loadFile("config.lua");
-        System.out.println(Config.getString("siege.goals[3].display_name"));
+        assertEquals(true, Config.getInt("#siege.goals") == 3);
         Registry.resetInstance();
     }
 
