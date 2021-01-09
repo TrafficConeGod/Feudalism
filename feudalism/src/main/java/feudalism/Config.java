@@ -1,16 +1,23 @@
 package feudalism;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
+import feudalism.object.ConfigFunction;
+
 public class Config {
     private static LuaValue configTable;
     private static Map<String, Object> configSchema;
     private static final String ENTRY_BASE = "%s%s = %s;\n";
+    private static final String MEMBER_BASE = "%s%s;\n";
+    private static Globals configGlobals = JsePlatform.standardGlobals();
+    private static Globals getGlobals;
 
     public static Map<String, Object> getConfigSchema() {
         if (configSchema == null) {
@@ -27,12 +34,59 @@ public class Config {
                 map.put("size", 8);
                 configSchema.put("grid_coord", map);
             }
+            // siege config
+            {
+                Map<String, Object> map = new HashMap<>();
+                {
+                    Map<String, Object> submap = new HashMap<>();
+                    submap.put("name", "ruler_change");
+                    submap.put("display_name", "Demand Ruler Change");
+                    {
+                        List<Object> list = new ArrayList<>();
+                        list.add("new_ruler");
+                        submap.put("props", list);
+                    }
+                    submap.put("on_peace", new ConfigFunction("victor, loser, props", "local new_ruler = Util.getPlayerUuidByName(props.new_ruler);\nloser.setOwner(new_ruler);"));
+                    List<Object> list = new ArrayList<>();
+                    list.add(submap);
+                    map.put("goals", list);
+                }
+                configSchema.put("siege", map);
+            }
         }
         return configSchema;
     }
 
-    private static String repeatString(String str, int count) {
+    public static String repeatString(String str, int count) {
         return new String(new char[count]).replace("\0", str);
+    }
+
+    private static String getLuaValue(Object val, int tabLevel) {
+        String luaValue = "nil";
+        if (val.getClass() == HashMap.class) {
+            luaValue = mapToLua((Map<String, Object>) val, tabLevel + 1); // lack of type safety go brr
+        } else if (val.getClass() == ArrayList.class) {
+            luaValue = listToLua((List<Object>) val, tabLevel + 1);
+        } else if (val.getClass() == ConfigFunction.class) {
+            ConfigFunction fn = (ConfigFunction) val;
+            luaValue = fn.getCode(tabLevel + 1);
+        } else if (val.getClass() == String.class) {
+            luaValue = "\"" + val.toString() + "\"";
+        } else {
+            luaValue = val.toString();
+        }
+        return luaValue;
+    }
+
+    private static String listToLua(List<Object> list, int tabLevel) {
+        String luaString = "{\n";
+        for (Object val : list) {
+            String luaValue = getLuaValue(val, tabLevel);
+            String luaEntry = String.format(MEMBER_BASE, repeatString("\t", tabLevel), luaValue);
+            luaString += luaEntry;
+        }
+        luaString += repeatString("\t", tabLevel - 1) + "}";
+        return luaString;
     }
 
     private static String mapToLua(Map<String, Object> map, int tabLevel) {
@@ -40,14 +94,7 @@ public class Config {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             String key = entry.getKey();
             Object val = entry.getValue();
-            String luaValue;
-            if (val.getClass() == HashMap.class) {
-                luaValue = mapToLua((Map<String, Object>) val, tabLevel + 1); // lack of type safety go brr
-            } else if (val.getClass() == String.class) {
-                luaValue = "\"" + val.toString() + "\"";
-            } else {
-                luaValue = val.toString();
-            }
+            String luaValue = getLuaValue(val, tabLevel);
             String luaEntry = String.format(ENTRY_BASE, repeatString("\t", tabLevel), key, luaValue);
             luaString += luaEntry;
         }
@@ -59,6 +106,62 @@ public class Config {
         return "return " + mapToLua(getConfigSchema(), 1) + ";";
     }
 
+    private static boolean isValid(LuaValue luaVal, Object val) {
+        if (luaVal.type() == 0) {
+            return false;
+        }
+        if (val.getClass() == HashMap.class) {
+            if (luaVal.type() != 5) {
+                return false;
+            }
+            if (!isValid(luaVal, (Map<String, Object>) val)) {
+                return false;
+            }
+        } else if (val.getClass() == ArrayList.class) {
+            if (luaVal.type() != 5) {
+                return false;
+            }
+            if (!isValid(luaVal, (List<Object>) val)) {
+                return false;
+            }
+        } else {
+            if (val.getClass() == Boolean.class) {
+                if (luaVal.type() != 1) {
+                    return false;
+                }
+            } else if (val.getClass() == Integer.class || val.getClass() == Float.class
+                    || val.getClass() == Double.class) {
+                if (luaVal.type() != 3) {
+                    return false;
+                }
+            } else if (val.getClass() == String.class) {
+                if (luaVal.type() != 4) {
+                    return false;
+                }
+            } else if (val.getClass() == ConfigFunction.class) {
+                if (luaVal.type() != 6) {
+                    return false;
+                }
+            } else {
+                System.out.println("Unsupported type " + val.getClass());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isValid(LuaValue array, List<Object> list) {
+        int i = 1;
+        for (Object val : list) {
+            LuaValue luaVal = array.get(i);
+            if (!isValid(luaVal, val)) {
+                return false;
+            }
+            i++;
+        }
+        return true;
+    }
+
     private static boolean isValid(LuaValue table, Map<String, Object> map) {
         if (table.type() != 5) {
             return false;
@@ -67,39 +170,15 @@ public class Config {
             String key = entry.getKey();
             Object val = entry.getValue();
             LuaValue luaVal = table.get(key);
-            if (luaVal.type() == 0) {
+            if (!isValid(luaVal, val)) {
                 return false;
-            }
-            if (val.getClass() == HashMap.class) {
-                if (luaVal.type() != 5) {
-                    return false;
-                }
-                if (!isValid(luaVal, (Map<String, Object>) val)) {
-                    return false;
-                }
-            } else {
-                if (val.getClass() == Boolean.class) {
-                    if (luaVal.type() != 1) {
-                        return false;
-                    }
-                } else if (val.getClass() == Integer.class || val.getClass() == Float.class
-                        || val.getClass() == Double.class) {
-                    if (luaVal.type() != 3) {
-                        return false;
-                    }
-                } else if (val.getClass() == String.class) {
-                    if (luaVal.type() != 4) {
-                        return false;
-                    }
-                }
             }
         }
         return true;
     }
 
     public static void load(String luaCode) throws FeudalismException {
-        Globals globals = JsePlatform.standardGlobals();
-        LuaValue table = globals.load(luaCode).call();
+        LuaValue table = configGlobals.load(luaCode).call();
         if (!isValid(table, getConfigSchema())) {
             throw new FeudalismException("Unable to load lua config, invalid formatting.");
         }
@@ -107,41 +186,55 @@ public class Config {
     }
 
     public static void loadFile(String path) throws FeudalismException {
-        Globals globals = JsePlatform.standardGlobals();
-        LuaValue table = globals.loadfile(path).call();
+        LuaValue table = configGlobals.loadfile(path).call();
         if (!isValid(table, getConfigSchema())) {
             throw new FeudalismException("Unable to load lua config, invalid formatting.");
         }
         configTable = table;
     }
 
-    private static Object get(String path, int type) throws FeudalismException {
-        String[] split = path.split("\\.");
+    private static Object get(String luaCode, int type) throws FeudalismException {
         if (Registry.isJUnitTest() && configTable == null) {
             load(generate());
         }
-        LuaValue table = configTable;
-        for (String pathDown : split) {
-            LuaValue val = table.get(pathDown);
-            if (val.type() == 0) {
-                throw new FeudalismException(String.format("No config value with path %s", path));
-            }
-            if (val.type() == 5) {
-                table = val;
-            } else {
-                if (val.type() != type) {
-                    throw new FeudalismException("Config value type does not match expected type");
-                }
-                if (val.type() == 1) {
-                    return val.checkboolean();
-                } else if (val.type() == 3) {
-                    return val.checkint();
-                } else if (val.type() == 4) {
-                    return val.checkjstring();
-                }
-            }
+        if (getGlobals == null) {
+           getGlobals = JsePlatform.standardGlobals();
+           getGlobals.set("Config", configTable);
         }
-        throw new FeudalismException(String.format("No config value with path %s", path));
+        LuaValue val = getGlobals.load(String.format("return Config.%s", luaCode)).call();
+        if (val.type() != type) {
+            throw new FeudalismException("Config value type does not match expected type");
+        }
+        if (val.type() == 1) {
+            return val.checkboolean();
+        } else if (val.type() == 3) {
+            return val.checkint();
+        } else if (val.type() == 4) {
+            return val.checkjstring();
+        }
+        throw new FeudalismException(String.format("No config value with path %s", luaCode));
+        // LuaValue table = configTable;
+        // for (String pathDown : split) {
+        //     LuaValue val = table.get(pathDown);
+        //     if (val.type() == 0) {
+        //         throw new FeudalismException(String.format("No config value with path %s", path));
+        //     }
+        //     if (val.type() == 5) {
+        //         table = val;
+        //     } else {
+        //         if (val.type() != type) {
+        //             throw new FeudalismException("Config value type does not match expected type");
+        //         }
+        //         if (val.type() == 1) {
+        //             return val.checkboolean();
+        //         } else if (val.type() == 3) {
+        //             return val.checkint();
+        //         } else if (val.type() == 4) {
+        //             return val.checkjstring();
+        //         }
+        //     }
+        // }
+        // throw new FeudalismException(String.format("No config value with path %s", path));
     }
 
     public static boolean getBoolean(String path) {

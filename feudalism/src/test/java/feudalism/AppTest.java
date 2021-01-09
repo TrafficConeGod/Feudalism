@@ -103,6 +103,11 @@ public class AppTest {
         Registry.resetInstance();
     }
 
+    @Test
+    public void configTest() throws FeudalismException {
+        Registry.resetInstance();
+    }
+
     // @Test
     // public void configTest() throws FeudalismException, IOException {
     //     File configFile = new File("config.lua");
