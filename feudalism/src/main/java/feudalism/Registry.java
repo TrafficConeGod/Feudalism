@@ -37,7 +37,7 @@ public class Registry implements Printable, Readable {
         Registry registry = new Registry();
         registry.setFridge(fridge);
         Registry.setInstance(registry);
-        if (!isJUnitTest()) {
+        if (!Util.isJUnitTest()) {
             Registry.getInstance().initWorld();
         }
     }
@@ -158,16 +158,7 @@ public class Registry implements Printable, Readable {
             }
         }
         return false;
-    }
-
-    public static boolean isJUnitTest() {  
-        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-            if (element.getClassName().startsWith("org.junit.")) {
-                return true;
-            }           
-        }
-        return false;
-    }      
+    }  
 
     public void save() {
         try {

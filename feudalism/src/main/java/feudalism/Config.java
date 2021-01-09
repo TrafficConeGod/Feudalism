@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import feudalism.object.ConfigFunction;
@@ -16,7 +18,7 @@ public class Config {
     private static Map<String, Object> configSchema;
     private static final String ENTRY_BASE = "%s%s = %s;\n";
     private static final String MEMBER_BASE = "%s%s;\n";
-    private static Globals configGlobals = JsePlatform.standardGlobals();
+    private static Globals configGlobals;
     private static Globals getGlobals;
 
     public static Map<String, Object> getConfigSchema() {
@@ -47,7 +49,7 @@ public class Config {
                         sublist.add("new_ruler");
                         submap.put("props", sublist);
                     }
-                    submap.put("on_peace", new ConfigFunction("victor, loser, props", "local new_ruler = Util.getPlayerUuidByName(props.new_ruler);\nloser.setOwner(new_ruler);"));
+                    submap.put("on_peace", new ConfigFunction("victor, loser, props", "local new_ruler = Util:getPlayerUuidByName(props.new_ruler);\nloser:setOwner(new_ruler);"));
                     list.add(submap);
                 }
                 {
@@ -55,7 +57,7 @@ public class Config {
                     submap.put("name", "subjugate");
                     submap.put("display_name", "Subjugate");
                     submap.put("props", new ArrayList<>());
-                    submap.put("on_peace", new ConfigFunction("victor, loser", "victor.addSubject(loser);"));
+                    submap.put("on_peace", new ConfigFunction("victor, loser", "victor:addSubject(loser);"));
                     list.add(submap);
                 }
                 {
@@ -63,7 +65,7 @@ public class Config {
                     submap.put("name", "personal_union");
                     submap.put("display_name", "Demand Personal Union");
                     submap.put("props", new ArrayList<>());
-                    submap.put("on_peace", new ConfigFunction("victor, loser", "loser.setOwner(victor.getOwner());"));
+                    submap.put("on_peace", new ConfigFunction("victor, loser", "loser:setOwner(victor:getOwner());"));
                     list.add(submap);
                 }
                 map.put("goals", list);
@@ -71,10 +73,6 @@ public class Config {
             }
         }
         return configSchema;
-    }
-
-    public static String repeatString(String str, int count) {
-        return new String(new char[count]).replace("\0", str);
     }
 
     private static String getLuaValue(Object val, int tabLevel) {
@@ -98,10 +96,10 @@ public class Config {
         String luaString = "{\n";
         for (Object val : list) {
             String luaValue = getLuaValue(val, tabLevel);
-            String luaEntry = String.format(MEMBER_BASE, repeatString("\t", tabLevel), luaValue);
+            String luaEntry = String.format(MEMBER_BASE, Util.repeatString("\t", tabLevel), luaValue);
             luaString += luaEntry;
         }
-        luaString += repeatString("\t", tabLevel - 1) + "}";
+        luaString += Util.repeatString("\t", tabLevel - 1) + "}";
         return luaString;
     }
 
@@ -111,10 +109,10 @@ public class Config {
             String key = entry.getKey();
             Object val = entry.getValue();
             String luaValue = getLuaValue(val, tabLevel);
-            String luaEntry = String.format(ENTRY_BASE, repeatString("\t", tabLevel), key, luaValue);
+            String luaEntry = String.format(ENTRY_BASE, Util.repeatString("\t", tabLevel), key, luaValue);
             luaString += luaEntry;
         }
-        luaString += repeatString("\t", tabLevel - 1) + "}";
+        luaString += Util.repeatString("\t", tabLevel - 1) + "}";
         return luaString;
     }
 
@@ -193,7 +191,15 @@ public class Config {
         return true;
     }
 
+    private static void checkConfigGlobals() {
+        if (configGlobals == null) {
+            configGlobals = JsePlatform.standardGlobals();
+            configGlobals.set("Util", CoerceJavaToLua.coerce(Util.class));
+        }
+    }
+
     public static void load(String luaCode) throws FeudalismException {
+        checkConfigGlobals();
         LuaValue table = configGlobals.load(luaCode).call();
         if (!isValid(table, getConfigSchema())) {
             throw new FeudalismException("Unable to load lua config, invalid formatting.");
@@ -202,6 +208,7 @@ public class Config {
     }
 
     public static void loadFile(String path) throws FeudalismException {
+        checkConfigGlobals();
         LuaValue table = configGlobals.loadfile(path).call();
         if (!isValid(table, getConfigSchema())) {
             throw new FeudalismException("Unable to load lua config, invalid formatting.");
@@ -210,7 +217,7 @@ public class Config {
     }
 
     private static Object get(String luaCode, int type) throws FeudalismException {
-        if (Registry.isJUnitTest() && configTable == null) {
+        if (Util.isJUnitTest() && configTable == null) {
             load(generate());
         }
         if (getGlobals == null) {
@@ -232,6 +239,8 @@ public class Config {
             return val.checkint();
         } else if (val.type() == 4) {
             return val.checkjstring();
+        } else if (val.type() == 6) {
+            return val.checkfunction();
         }
         throw new FeudalismException(String.format("No config value with path %s", luaCode));
     }
@@ -261,5 +270,16 @@ public class Config {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static LuaFunction getFunction(String path) {
+        try {
+            return (LuaFunction) get(path, 6);
+        } catch (FeudalismException e) {
+            e.printStackTrace();
+        }
+        return new LuaFunction(){
+            
+        };
     }
 }

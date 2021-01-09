@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -12,6 +14,7 @@ import org.junit.Test;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 import feudalism.object.Siege;
+import feudalism.object.SiegeGoal;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.json.JsonPrinter;
@@ -106,6 +109,16 @@ public class AppTest {
     @Test
     public void configTest() throws FeudalismException {
         assertEquals(true, Config.getInt("#siege.goals") == 3);
+        Registry.resetInstance();
+    }
+
+    @Test
+    public void siegeGoalTest() throws FeudalismException {
+        SiegeGoal goal = new SiegeGoal(1);
+        Realm r1 = new Realm();
+        Realm r2 = new Realm();
+        goal.execute(r1, r2, new ArrayList<>());
+        assertEquals(true, r2.getOverlord() == r1);
         Registry.resetInstance();
     }
 

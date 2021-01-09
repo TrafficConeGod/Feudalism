@@ -1,6 +1,6 @@
 package feudalism.object;
 
-import feudalism.Config;
+import feudalism.Util;
 
 public class ConfigFunction {
     private static final String FUNCTION_BASE = "function(%s)%s\n%send";
@@ -13,6 +13,6 @@ public class ConfigFunction {
     }
 
     public String getCode(int tabLevel) {
-        return String.format(FUNCTION_BASE, argCode, luaCode.replaceAll("\n", "\n" + Config.repeatString("\t", tabLevel)), Config.repeatString("\t", tabLevel - 1));
+        return String.format(FUNCTION_BASE, argCode, luaCode.replaceAll("\n", "\n" + Util.repeatString("\t", tabLevel)), Util.repeatString("\t", tabLevel - 1));
     }
 }
