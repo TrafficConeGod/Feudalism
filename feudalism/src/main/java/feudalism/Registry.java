@@ -30,6 +30,16 @@ public class Registry implements Printable, Readable {
         instance = inst;
     }
 
+    public static void resetInstance() throws FeudalismException {
+        JsonFileFridge fridge = getInstance().getFridge();
+        Registry registry = new Registry();
+        registry.setFridge(fridge);
+        Registry.setInstance(registry);
+        if (!isJUnitTest()) {
+            Registry.getInstance().initWorld();
+        }
+    }
+
     private JsonFileFridge fridge;
     private List<Realm> topRealms = new ArrayList<>();
     private List<Realm> realms = new ArrayList<>();

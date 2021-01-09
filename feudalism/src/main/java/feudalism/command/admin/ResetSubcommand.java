@@ -20,12 +20,8 @@ public class ResetSubcommand extends SubcommandBase {
 
     @Override
     public boolean onExecute(CommandSender sender, String[] args) {
-        JsonFileFridge fridge = Registry.getInstance().getFridge();
-        Registry registry = new Registry();
-        registry.setFridge(fridge);
-        Registry.setInstance(registry);
         try {
-            Registry.getInstance().initWorld();
+            Registry.resetInstance();
             return true;
         } catch (FeudalismException e) {
             e.printStackTrace();

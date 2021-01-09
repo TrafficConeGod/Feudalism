@@ -23,7 +23,7 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class AppTest {
     @Test
-    public void overlordSubjectLinkingTest() {
+    public void overlordSubjectLinkingTest() throws FeudalismException {
         Realm r1 = new Realm();
         Realm r2 = new Realm();
         r2.setOverlord(r1);
@@ -32,12 +32,11 @@ public class AppTest {
         r2.removeOverlord();
         assertEquals(false, r2.hasOverlord());
         assertEquals(false, r1.getSubjects().size() > 0);
-        r1.destroyTree();
-        r2.destroyTree();
+        Registry.resetInstance();
     }
 
     @Test
-    public void azraelSerializationTest() throws PrintException, ReadException {
+    public void azraelSerializationTest() throws PrintException, ReadException, FeudalismException {
         Realm realm = new Realm();
         realm.setName("Test");
         realm.setOwner(UUID.randomUUID());
@@ -54,13 +53,11 @@ public class AppTest {
         assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
         assertEquals(true, realm.getOwner().equals(realmReconstruct.getOwner()));
         assertEquals(true, realm.getClaims().size() == realmReconstruct.getClaims().size());
-        realmReconstruct.destroyTree();
-        realm.destroyTree();
-        r2.destroyTree();
+        Registry.resetInstance();
     }
 
     @Test
-    public void azraelGridCoordTest() throws PrintException, ReadException {
+    public void azraelGridCoordTest() throws PrintException, ReadException, FeudalismException {
         GridCoord coord = GridCoord.getFromGridPosition(100, 100);
         JsonPrinter printer = new JsonPrinter();
         JsonReader reader = new JsonReader();
@@ -68,17 +65,19 @@ public class AppTest {
         GridCoord coordR = (GridCoord) reader.read(elem);
         assertEquals(true, coord.getGridX() == coordR.getGridX());
         assertEquals(true, coord.getGridZ() == coordR.getGridZ());
+        Registry.resetInstance();
     }
 
     @Test
-    public void luaTest() {
+    public void luaTest() throws FeudalismException {
         Globals globals = JsePlatform.standardGlobals();
         LuaValue val = globals.load("return \"Test string\"").call();
         assertEquals(true, val.equals(LuaValue.valueOf("Test string")));
+        Registry.resetInstance();
     }
 
     @Test
-    public void gridCoordTest() {
+    public void gridCoordTest() throws FeudalismException {
         Realm realm = new Realm();
         realm.addClaimFromWorldPosition(0, 0);
         realm.addClaimFromWorldPosition(0, 1);
@@ -88,6 +87,7 @@ public class AppTest {
         int size = Registry.getInstance().getRealms().size();
         realm.removeClaimFromGridPosition(0, 0);
         assertEquals(true, Registry.getInstance().getRealms().size() == size - 1);
+        Registry.resetInstance();
     }
 
     // @Test
