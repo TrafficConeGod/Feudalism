@@ -18,7 +18,6 @@ public class SiegeGoal {
     private LuaValue onPeace;
 
     public SiegeGoal(int index) {
-        index++;
         this.index = index;
         name = Config.getString(getPath("name"));
         displayName = Config.getString(getPath("display_name"));
@@ -28,6 +27,14 @@ public class SiegeGoal {
             String prop = Config.getString(String.format(getPath("props") + "[%s]", i));
             props.add(prop);
         }
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    public String getDisplayName() {
+        return displayName;
     }
 
     private String getPath(String path) {

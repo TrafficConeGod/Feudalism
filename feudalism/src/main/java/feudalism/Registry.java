@@ -17,11 +17,19 @@ import ca.uqac.lif.azrael.json.JsonFileFridge;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 import feudalism.object.Siege;
+import feudalism.object.SiegeGoal;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 public class Registry implements Printable, Readable {
+    public Registry() {
+        int size = Config.getInt("#siege.goals");
+        for (int i = 1; i <= size; i++) {
+            siegeGoals.add(new SiegeGoal(i));
+        }
+    }
+
     private static Registry instance = new Registry();
 
     public static Registry getInstance() {
@@ -48,6 +56,7 @@ public class Registry implements Printable, Readable {
 
     private List<Realm> realms = new ArrayList<>();
     private Map<Integer, Map<Integer, GridCoord>> gridCoordCache = new HashMap<>();
+    private List<SiegeGoal> siegeGoals = new ArrayList<>();
     private World world;
 
     public void setFridge(JsonFileFridge fridge) {
@@ -146,6 +155,24 @@ public class Registry implements Printable, Readable {
 
     public World getWorld() {
         return world;
+    }
+    
+    public boolean hasSiegeGoal(String name) {
+        for (SiegeGoal goal : siegeGoals) {
+            if (goal.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public SiegeGoal getSiegeGoal(String name) {
+        for (SiegeGoal goal : siegeGoals) {
+            if (goal.getName().equals(name)) {
+                return goal;
+            }
+        }
+        return null;
     }
     
     // TODO: Particularly inefficient function

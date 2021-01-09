@@ -269,7 +269,7 @@ public class Config {
         } catch (FeudalismException e) {
             e.printStackTrace();
         }
-        return "";
+        return null;
     }
 
     public static LuaFunction getFunction(String path) {
@@ -278,8 +278,6 @@ public class Config {
         } catch (FeudalismException e) {
             e.printStackTrace();
         }
-        return new LuaFunction(){
-            
-        };
+        return null;
     }
 }
