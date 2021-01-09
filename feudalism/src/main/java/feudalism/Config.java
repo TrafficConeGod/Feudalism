@@ -151,13 +151,13 @@ public class Config {
     }
 
     private static boolean isValid(LuaValue array, List<Object> list) {
-        int i = 1;
-        for (Object val : list) {
+        Object val = list.get(0);
+        int size = array.len().checkint();
+        for (int i = 1; i <= size; i++) {
             LuaValue luaVal = array.get(i);
             if (!isValid(luaVal, val)) {
                 return false;
             }
-            i++;
         }
         return true;
     }
