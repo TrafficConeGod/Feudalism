@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import ca.uqac.lif.azrael.ObjectPrinter;
 import ca.uqac.lif.azrael.ObjectReader;
@@ -15,6 +16,7 @@ import ca.uqac.lif.azrael.fridge.FridgeException;
 import ca.uqac.lif.azrael.json.JsonFileFridge;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
+import feudalism.object.Siege;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -42,6 +44,8 @@ public class Registry implements Printable, Readable {
 
     private JsonFileFridge fridge;
     private List<Realm> topRealms = new ArrayList<>();
+    private List<Siege> sieges = new ArrayList<>();
+
     private List<Realm> realms = new ArrayList<>();
     private Map<Integer, Map<Integer, GridCoord>> gridCoordCache = new HashMap<>();
     private World world;
@@ -76,6 +80,27 @@ public class Registry implements Printable, Readable {
 
     public List<Realm> getTopRealms() {
         return topRealms;
+    }
+
+    public void addSiege(Siege siege) {
+        sieges.add(siege);
+    }
+
+    public void removeSiege(Siege siege) {
+        sieges.remove(siege);
+    }
+
+    public List<Siege> getSieges() {
+        return sieges;
+    }
+
+    public Realm getRealmByUuid(UUID uuid) throws FeudalismException {
+        for (Realm realm : getRealms()) {
+            if (realm.getUuid().equals(uuid)) {
+                return realm;
+            }
+        }
+        throw new FeudalismException("No realm with uuid %s");
     }
 
     public void addRealm(Realm realm) {
@@ -144,6 +169,7 @@ public class Registry implements Printable, Readable {
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
         list.add(getTopRealms());
+        list.add(getSieges());
         return printer.print(list);
     }
 
@@ -153,6 +179,9 @@ public class Registry implements Printable, Readable {
         Registry registry = new Registry();
         for (Realm realm : (ArrayList<Realm>) list.get(0)) {
             registry.addTopRealm(realm);
+        }
+        for (Siege siege : (ArrayList<Siege>) list.get(1)) {
+            registry.addSiege(siege);
         }
         return registry;
     }

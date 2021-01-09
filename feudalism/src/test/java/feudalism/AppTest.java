@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
+import feudalism.object.Siege;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.json.JsonPrinter;
@@ -87,6 +88,16 @@ public class AppTest {
         int size = Registry.getInstance().getRealms().size();
         realm.removeClaimFromGridPosition(0, 0);
         assertEquals(true, Registry.getInstance().getRealms().size() == size - 1);
+        Registry.resetInstance();
+    }
+
+    @Test
+    public void warTest() throws FeudalismException {
+        Realm r1 = new Realm();
+        Realm r2 = new Realm();
+        Siege siege = new Siege(r1, r2);
+        siege.win(r1);
+        assertEquals(true, r2.getOverlord() == r1);
         Registry.resetInstance();
     }
 

@@ -157,6 +157,10 @@ public class Realm implements Printable, Readable {
         return subjects.contains(subject);
     }
 
+    public boolean hasDescendantSubject(Realm subject) {
+        return getDescendantSubjects().contains(subject);
+    }
+
     public void removeSubject(Realm subject) {
         if (!hasSubject(subject)) {
             System.out.println("Can not remove subject that is not a subject of this");
