@@ -36,6 +36,18 @@ public class Siege implements Printable, Readable {
         Registry.getInstance().removeSiege(this);
     }
 
+    public Realm getAttacker() {
+        return attacker;
+    }
+
+    public Realm getDefender() {
+        return defender;
+    }
+
+    public SiegeGoal getGoal() {
+        return goal;
+    }
+
     public List<Realm> getAttackers() {
         List<Realm> attackers = new ArrayList<>();
         attackers.add(attacker);
@@ -98,6 +110,21 @@ public class Siege implements Printable, Readable {
         }
     }
 
+    public String getInfo() {
+        return String.format("Goal: %s\nAttacker: %s\nDefender: %s\nAttacker Allies: %s\nDefender Allies: %s",
+            getGoal().getDisplayName(),
+            getAttacker().getName(),
+            getDefender().getName(),
+            attackerAllies.size(),
+            defenderAllies.size()
+        );
+    }
+
+    @Override
+    public String toString() {
+        return getInfo();
+    }
+
     @Override
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
@@ -113,7 +140,7 @@ public class Siege implements Printable, Readable {
             defenderAllies.add(ally.getUuid().toString());
         }
         list.add(defenderAllies);
-        // TODO: Add other siege properties
+        list.add(goal.getName());
         return printer.print(list);
     }
 
@@ -123,10 +150,21 @@ public class Siege implements Printable, Readable {
         try {
             Realm attacker = Registry.getInstance().getRealmByUuid(UUID.fromString((String) list.get(0)));
             Realm defender = Registry.getInstance().getRealmByUuid(UUID.fromString((String) list.get(1)));
-            // Siege siege = new Siege(attacker, defender);
-            // TODO: Add other siege properties
-            // return siege;
-            return null;
+            SiegeGoal goal = Registry.getInstance().getSiegeGoal((String) list.get(4));
+            Siege siege = new Siege(attacker, defender, goal);
+            List<String> attackerAllies = (ArrayList<String>) list.get(2);
+            for (String ally : attackerAllies) {
+                UUID uuid = UUID.fromString(ally);
+                Realm realm = Registry.getInstance().getRealmByUuid(uuid);
+                siege.addAlly(attacker, realm);
+            }
+            List<String> defenderAllies = (ArrayList<String>) list.get(3);
+            for (String ally : defenderAllies) {
+                UUID uuid = UUID.fromString(ally);
+                Realm realm = Registry.getInstance().getRealmByUuid(uuid);
+                siege.addAlly(defender, realm);
+            }
+            return siege;
         } catch (FeudalismException e) {
             e.printStackTrace();
             throw new ReadException(e);

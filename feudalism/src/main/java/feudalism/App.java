@@ -26,7 +26,7 @@ public class App extends JavaPlugin {
         }
         initCommands();
         for (Realm realm : Registry.getInstance().getTopRealms()) {
-            System.out.println(realm.getProps());
+            System.out.println(realm);
         }
     }
 

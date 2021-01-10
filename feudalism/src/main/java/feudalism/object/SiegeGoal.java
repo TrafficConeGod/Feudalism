@@ -37,6 +37,11 @@ public class SiegeGoal {
         return displayName;
     }
 
+    @Override
+    public String toString() {
+        return getDisplayName();
+    }
+
     private String getPath(String path) {
         return String.format("siege.goals[%s].%s", index, path);
     }

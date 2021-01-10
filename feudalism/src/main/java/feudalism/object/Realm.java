@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 
 import ca.uqac.lif.azrael.ObjectPrinter;
 import ca.uqac.lif.azrael.ObjectReader;
@@ -16,6 +17,7 @@ import ca.uqac.lif.azrael.Readable;
 import feudalism.Config;
 import feudalism.FeudalismException;
 import feudalism.Registry;
+import feudalism.Util;
 import ca.uqac.lif.azrael.ReadException;
 
 public class Realm implements Printable, Readable {
@@ -69,7 +71,7 @@ public class Realm implements Printable, Readable {
 
     @Override
     public String toString() {
-        return getName();
+        return getInfo();
     }
 
     public boolean hasOwner() {
@@ -88,7 +90,17 @@ public class Realm implements Printable, Readable {
         return Bukkit.getPlayer(getOwner());
     }
 
-    public void setOwner(UUID owner) {
+    public OfflinePlayer getOwnerOfflinePlayer() {
+        return Bukkit.getOfflinePlayer(getOwner());
+    }
+
+    public void setOwner(UUID owner) throws FeudalismException {
+        if (!Util.isJUnitTest()) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(owner);
+            if (!player.hasPlayedBefore()) {
+                throw new FeudalismException("No player with uuid " + owner);
+            }
+        }
         hasOwner = true;
         this.owner = owner;
     }
@@ -267,11 +279,11 @@ public class Realm implements Printable, Readable {
         destroy();
     }
 
-    public String getProps() {
+    public String getInfo() {
         return String.format("UUID: %s\nName: %s\nOwner: %s\nOverlord: %s\nSubjects: %s\nMembers: %s\nClaims: %s",
             getUuid().toString(),
             getName(),
-            hasOwner() ? getOwnerPlayer().getName() : "None",
+            hasOwner() ? getOwnerOfflinePlayer().getName() : "None",
             hasOverlord() ? getOverlord().getName() : "None",
             getSubjects().size(),
             members.size(),

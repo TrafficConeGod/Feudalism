@@ -19,13 +19,7 @@ public class ResetSubcommand extends SubcommandBase {
     }
 
     @Override
-    public boolean onExecute(CommandSender sender, String[] args) {
-        try {
-            Registry.resetInstance();
-            return true;
-        } catch (FeudalismException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void onExecute(CommandSender sender, String[] args) throws FeudalismException {
+        Registry.resetInstance();
     }
 }

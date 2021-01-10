@@ -6,6 +6,9 @@ import feudalism.command.SubcommandBase;
 public class AdminCommand extends CommandBase {
     @Override
     protected SubcommandBase[] getSubcommands() {
-        return new SubcommandBase[]{new ResetSubcommand()};
+        return new SubcommandBase[]{
+            new ResetSubcommand(),
+            new AdminCreateSubcommand()
+        };
     }
 }

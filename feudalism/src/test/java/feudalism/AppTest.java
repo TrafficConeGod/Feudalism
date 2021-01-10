@@ -96,19 +96,18 @@ public class AppTest {
 
     @Test
     public void siegeTest() throws FeudalismException {
-        if (Registry.getInstance().hasSiegeGoal("subjugate")) {
-            Realm r1 = new Realm();
-            Realm r2 = new Realm();
-            Siege siege = new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
-            try {
-                r2.setOverlord(r1);
-                assertEquals(true, false);
-            } catch (FeudalismException e) {}
-            assertEquals(false, r2.hasOverlord());
-            siege.win(r1, new ArrayList<>());
-            assertEquals(true, r2.getOverlord() == r1);
-            Registry.resetInstance();
-        }
+        assertEquals(true, Registry.getInstance().hasSiegeGoal("subjugate"));
+        Realm r1 = new Realm();
+        Realm r2 = new Realm();
+        Siege siege = new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
+        try {
+            r2.setOverlord(r1);
+            assertEquals(true, false);
+        } catch (FeudalismException e) {}
+        assertEquals(false, r2.hasOverlord());
+        siege.win(r1, new ArrayList<>());
+        assertEquals(true, r2.getOverlord() == r1);
+        Registry.resetInstance();
     }
 
     @Test
@@ -119,15 +118,34 @@ public class AppTest {
 
     @Test
     public void siegeGoalTest() throws FeudalismException {
-        if (Registry.getInstance().hasSiegeGoal("subjugate")) {
-            SiegeGoal goal = Registry.getInstance().getSiegeGoal("subjugate");
-            Realm r1 = new Realm();
-            Realm r2 = new Realm();
-            goal.execute(r1, r2, new ArrayList<>());
-            assertEquals(true, r2.getOverlord() == r1);
-        } else {
-            assertEquals(true, false);
-        }
+        assertEquals(true, Registry.getInstance().hasSiegeGoal("subjugate"));
+        SiegeGoal goal = Registry.getInstance().getSiegeGoal("subjugate");
+        Realm r1 = new Realm();
+        Realm r2 = new Realm();
+        goal.execute(r1, r2, new ArrayList<>());
+        assertEquals(true, r2.getOverlord() == r1);
+        Registry.resetInstance();
+    }
+
+    @Test
+    public void siegeSerializationTest() throws FeudalismException, ReadException, PrintException {
+        assertEquals(true, Registry.getInstance().hasSiegeGoal("subjugate"));
+        Realm r1 = new Realm();
+        r1.setName("R1");
+        Realm r2 = new Realm();
+        r2.setName("R2");
+        Realm ally = new Realm();
+        Siege siege = new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
+        siege.addAlly(r1, ally);
+        JsonPrinter printer = new JsonPrinter();
+        JsonReader reader = new JsonReader();
+        JsonElement elem = printer.print(siege);
+        Siege siegeRec = (Siege) reader.read(elem);
+        assertEquals(true, siegeRec.getAttacker() == siege.getAttacker());
+        assertEquals(true, siegeRec.getDefender() == siege.getDefender());
+        assertEquals(true, siegeRec.getAttackers().size() == siege.getAttackers().size());
+        assertEquals(true, siegeRec.getDefenders().size() == siege.getDefenders().size());
+        assertEquals(true, siegeRec.getGoal() == siege.getGoal());
         Registry.resetInstance();
     }
 

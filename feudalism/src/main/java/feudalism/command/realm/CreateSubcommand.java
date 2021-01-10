@@ -16,20 +16,17 @@ public class CreateSubcommand extends SubcommandBase {
     }
 
     @Override
-    public boolean onExecute(CommandSender sender, String[] args) throws FeudalismException {
+    public void onExecute(CommandSender sender, String[] args) throws FeudalismException {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             if (!player.isOnline()) {
-                Chat.sendErrorMessage(sender, "Sender must be an online player");
-                return false;
+                throw new FeudalismException("Sender must be an online player");
             }
         } else {
-            Chat.sendErrorMessage(sender, "Sender must be an online player");
-            return false;
+            throw new FeudalismException("Sender must be an online player");
         }
         if (args.length < 1) {
-            Chat.sendErrorMessage(sender, "Not enough arguments");
-            return false;
+            throw new FeudalismException("Not enough arguments");
         }
         Player player = (Player) sender;
         String name = args[0];
@@ -37,6 +34,5 @@ public class CreateSubcommand extends SubcommandBase {
         realm.addClaimFromWorldPosition((int) player.getLocation().getX(), (int) player.getLocation().getZ());
         GridCoord claim = realm.getClaims().get(0);
         Chat.sendMessage(player, String.format("Created realm with name %s at: %s, %s", realm.getName(), claim.getGridX(), claim.getGridZ()));
-        return true;
     }
 }

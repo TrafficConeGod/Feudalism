@@ -194,6 +194,7 @@ public class Config {
     private static void checkConfigGlobals() {
         if (configGlobals == null) {
             configGlobals = JsePlatform.standardGlobals();
+            configGlobals.set("Registry", CoerceJavaToLua.coerce(Registry.class));
             configGlobals.set("Util", CoerceJavaToLua.coerce(Util.class));
         }
     }

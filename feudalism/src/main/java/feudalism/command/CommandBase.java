@@ -53,7 +53,8 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         try {
             SubcommandBase subcommand = getSubcommandByAlias(alias);
             String[] subcommandArgs = getSubcommandArgs(args);
-            return subcommand.onExecute(sender, subcommandArgs);
+            subcommand.onExecute(sender, subcommandArgs);
+            return true;
         } catch (FeudalismException e) {
             Chat.sendErrorMessage(sender, e.getMessage());
             return false;

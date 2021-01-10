@@ -13,8 +13,7 @@ public class SubcommandBase {
         return new String[0];
     }
 
-    protected boolean onExecute(CommandSender sender, String[] args) throws FeudalismException {
-        return false;
+    protected void onExecute(CommandSender sender, String[] args) throws FeudalismException {
     }
 
     protected List<String> onTabComplete(CommandSender sender, String[] args) {

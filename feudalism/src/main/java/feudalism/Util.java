@@ -3,13 +3,13 @@ package feudalism;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 public class Util {
     public static UUID getPlayerUuidByName(String name) throws FeudalismException {
         if (!isJUnitTest()) {
-            Player player = Bukkit.getPlayer(name);
-            if (player != null && player.isOnline()) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(name); // oh ffs this is just for a command im not using it for data storage (what do you think my goal here is?????)
+            if (player.hasPlayedBefore()) {
                 return player.getUniqueId();
             } else {
                 throw new FeudalismException("No player with name " + name);
