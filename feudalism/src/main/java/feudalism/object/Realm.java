@@ -227,15 +227,21 @@ public class Realm implements Printable, Readable {
     }
 
     public void addClaim(GridCoord coord) {
-        if (!hasClaim(coord)) {
-            claims.add(coord);
-            try {
-                if (!coord.hasOwner() || coord.getOwner() != this) {
-                    coord.setOwner(this);
-                }
-            } catch (FeudalismException e) {
-                e.printStackTrace();
+        if (hasClaim(coord)) {
+            return;
+        }
+        if (claims.size() > 0) {
+            if (!hasDirectBorder(coord)) {
+                return;
             }
+        }
+        claims.add(coord);
+        try {
+            if (!coord.hasOwner() || coord.getOwner() != this) {
+                coord.setOwner(this);
+            }
+        } catch (FeudalismException e) {
+            e.printStackTrace();
         }
     }
 

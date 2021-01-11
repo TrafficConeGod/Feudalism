@@ -87,6 +87,7 @@ public class AppTest {
         realm.addClaim(GridCoord.getFromWorldPosition(0, 1));
         realm.addClaim(GridCoord.getFromWorldPosition(1, 1));
         realm.addClaim(GridCoord.getFromWorldPosition(1, 1));
+        realm.addClaim(GridCoord.getFromGridPosition(1, 10));
         assertEquals(true, realm.getClaims().size() == 1);
         int size = Registry.getInstance().getRealms().size();
         realm.removeClaim(GridCoord.getFromGridPosition(0, 0));
