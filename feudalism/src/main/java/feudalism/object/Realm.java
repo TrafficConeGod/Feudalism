@@ -24,7 +24,7 @@ public class Realm implements Printable, Readable {
     private UUID uuid;
 
     private boolean hasOwner = false;
-    private UUID owner;
+    private User owner;
 
     private boolean hasOverlord = false;
     private Realm overlord;
@@ -49,7 +49,7 @@ public class Realm implements Printable, Readable {
         Registry.getInstance().addTopRealm(this);
     }
 
-    public Realm(UUID owner, String name) throws FeudalismException {
+    public Realm(User owner, String name) throws FeudalismException {
         uuid = UUID.randomUUID();
         setOwner(owner);
         setName(name);
@@ -57,7 +57,7 @@ public class Realm implements Printable, Readable {
         Registry.getInstance().addTopRealm(this);
     }
 
-    public Realm(UUID owner, String name, Realm overlord) throws FeudalismException {
+    public Realm(User owner, String name, Realm overlord) throws FeudalismException {
         uuid = UUID.randomUUID();
         setOwner(owner);
         setName(name);
@@ -82,28 +82,14 @@ public class Realm implements Printable, Readable {
         hasOwner = false;
     }
 
-    public UUID getOwner() throws FeudalismException {
+    public User getOwner() throws FeudalismException {
         if (!hasOwner()) {
             throw new FeudalismException("Realm does not have an owner");
         }
         return owner;
     }
 
-    public Player getOwnerPlayer() throws FeudalismException {
-        return Bukkit.getPlayer(getOwner());
-    }
-
-    public OfflinePlayer getOwnerOfflinePlayer() throws FeudalismException {
-        return Bukkit.getOfflinePlayer(getOwner());
-    }
-
-    public void setOwner(UUID owner) throws FeudalismException {
-        if (!Util.isJUnitTest()) {
-            OfflinePlayer player = Bukkit.getOfflinePlayer(owner);
-            if (!player.hasPlayedBefore()) {
-                throw new FeudalismException("No player with uuid " + owner);
-            }
-        }
+    public void setOwner(User owner) throws FeudalismException {
         hasOwner = true;
         this.owner = owner;
     }
@@ -273,20 +259,15 @@ public class Realm implements Printable, Readable {
     }
 
     public String getInfo() {
-        try {
-			return String.format("UUID: %s\nName: %s\nOwner: %s\nOverlord: %s\nSubjects: %s\nMembers: %s\nClaims: %s",
-			    getUuid().toString(),
-			    getName(),
-			    hasOwner() ? getOwnerOfflinePlayer().getName() : "None",
-			    hasOverlord() ? getOverlord().getName() : "None",
-			    getSubjects().size(),
-			    members.size(),
-			    claims.size()
-			);
-		} catch (FeudalismException e) {
-			e.printStackTrace();
-		}
-        return name;
+        return String.format("UUID: %s\nName: %s\nOwner: %s\nOverlord: %s\nSubjects: %s\nMembers: %s\nClaims: %s",
+            getUuid().toString(),
+            getName(),
+            hasOwner() ? owner.getOfflinePlayer().getName() : "None",
+            hasOverlord() ? overlord.getName() : "None",
+            getSubjects().size(),
+            members.size(),
+            claims.size()
+        );
     }
 
     public boolean hasDirectBorder(GridCoord coord) {
@@ -379,7 +360,7 @@ public class Realm implements Printable, Readable {
                 realm.addClaim(coord);
             }
             if ((boolean) list.get(5)) {
-                realm.setOwner(UUID.fromString((String) list.get(6)));
+                realm.setOwner(Registry.getInstance().getUserByUuid(UUID.fromString((String) list.get(6))));
             }
             return realm;
         } catch (FeudalismException e) {

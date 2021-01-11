@@ -17,6 +17,14 @@ public class Util {
         }
         return UUID.randomUUID();
     }
+    
+    public static boolean isValidPlayerUuid(UUID uuid) {
+        if (!isJUnitTest()) {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+            return player.hasPlayedBefore();
+        }
+        return true;
+    }
 
     public static boolean isJUnitTest() {  
         for (StackTraceElement element : Thread.currentThread().getStackTrace()) {

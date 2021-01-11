@@ -15,6 +15,7 @@ import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 import feudalism.object.Siege;
 import feudalism.object.SiegeGoal;
+import feudalism.object.User;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.json.JsonPrinter;
@@ -40,10 +41,11 @@ public class AppTest {
     }
 
     @Test
-    public void azraelSerializationTest() throws PrintException, ReadException, FeudalismException {
+    public void azraelRealmTest() throws PrintException, ReadException, FeudalismException {
+        User user = User.get(UUID.randomUUID());
         Realm realm = new Realm();
         realm.setName("Test");
-        realm.setOwner(UUID.randomUUID());
+        realm.setOwner(user);
         Realm r2 = new Realm();
         r2.setName("Test2");
         r2.setOverlord(realm);
@@ -57,6 +59,7 @@ public class AppTest {
         assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
         assertEquals(true, realm.getOwner().equals(realmReconstruct.getOwner()));
         assertEquals(true, realm.getClaims().size() == realmReconstruct.getClaims().size());
+        assertEquals(true, user == realmReconstruct.getOwner());
         Registry.resetInstance();
     }
 
@@ -69,6 +72,17 @@ public class AppTest {
         GridCoord coordR = (GridCoord) reader.read(elem);
         assertEquals(true, coord.getGridX() == coordR.getGridX());
         assertEquals(true, coord.getGridZ() == coordR.getGridZ());
+        Registry.resetInstance();
+    }
+
+    @Test
+    public void azraelUserTest() throws PrintException, ReadException, FeudalismException {
+        User user = User.get(UUID.randomUUID());
+        JsonPrinter printer = new JsonPrinter();
+        JsonReader reader = new JsonReader();
+        JsonElement elem = printer.print(user);
+        User userR = (User) reader.read(elem);
+        assertEquals(true, user.getUuid().equals(userR.getUuid()));
         Registry.resetInstance();
     }
 

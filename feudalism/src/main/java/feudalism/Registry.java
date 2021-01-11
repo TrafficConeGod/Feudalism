@@ -18,13 +18,13 @@ import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 import feudalism.object.Siege;
 import feudalism.object.SiegeGoal;
+import feudalism.object.User;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 /* TODO:
 Add FeudalismUser
-Only allow sieges to be started if defender is within x GridCoords of attacker
 */
 
 public class Registry implements Printable, Readable {
@@ -56,6 +56,7 @@ public class Registry implements Printable, Readable {
     }
 
     private JsonFileFridge fridge;
+    private List<User> users = new ArrayList<>();
     private List<Realm> topRealms = new ArrayList<>();
     private List<Siege> sieges = new ArrayList<>();
 
@@ -190,6 +191,23 @@ public class Registry implements Printable, Readable {
         }
         return false;
     }  
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
+    }
+
+    public User getUserByUuid(UUID uuid) throws FeudalismException {
+        for (User user : users) {
+            if (user.getUuid().equals(uuid)) {
+                return user;
+            }
+        }
+        throw new FeudalismException(String.format("No user with uuid %s", uuid.toString()));
+    }
 
     public void save() {
         try {
