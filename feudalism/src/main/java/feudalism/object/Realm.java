@@ -305,6 +305,23 @@ public class Realm implements Printable, Readable {
         return name;
     }
 
+    public boolean hasDirectBorder(GridCoord coord) {
+        try {
+            if (coord.hasOwner() && coord.getOwner() == this) {
+                return false;
+            }
+			return (
+			    (GridCoord.getFromGridPosition(coord.getGridX() - 1, coord.getGridZ()).getOwnerOrNull() == this) ||
+			    (GridCoord.getFromGridPosition(coord.getGridX() + 1, coord.getGridZ()).getOwnerOrNull() == this) ||
+			    (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() - 1).getOwnerOrNull() == this) ||
+			    (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() + 1).getOwnerOrNull() == this)
+			);
+		} catch (FeudalismException e) {
+			e.printStackTrace();
+        }
+        return false;
+    }
+
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
         list.add(uuid.toString());

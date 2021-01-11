@@ -149,6 +149,17 @@ public class AppTest {
         Registry.resetInstance();
     }
 
+    @Test
+    public void directBorderTest() throws FeudalismException {
+        Realm realm = new Realm();
+        realm.addClaimFromGridPosition(0, 0);
+        GridCoord coord = GridCoord.getFromGridPosition(1, 0);
+        GridCoord coordNot = GridCoord.getFromGridPosition(2, 0);
+        assertEquals(true, realm.hasDirectBorder(coord));
+        assertEquals(false, realm.hasDirectBorder(coordNot));
+        Registry.resetInstance();
+    }
+
     // @Test
     // public void configTest() throws FeudalismException, IOException {
     //     File configFile = new File("config.lua");

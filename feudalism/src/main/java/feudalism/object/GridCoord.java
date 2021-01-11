@@ -69,6 +69,14 @@ public class GridCoord implements Printable, Readable {
         return owner;
     }
 
+    public Realm getOwnerOrNull() {
+        if (hasOwner()) {
+            return owner;
+        } else {
+            return null;
+        }
+    }
+
     public Location getLocation() {
         return new Location(Registry.getInstance().getWorld(), x * getSize(), 0, z * getSize());
     }
