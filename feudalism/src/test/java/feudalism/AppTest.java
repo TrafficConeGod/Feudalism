@@ -83,13 +83,13 @@ public class AppTest {
     @Test
     public void gridCoordTest() throws FeudalismException {
         Realm realm = new Realm();
-        realm.addClaimFromWorldPosition(0, 0);
-        realm.addClaimFromWorldPosition(0, 1);
-        realm.addClaimFromWorldPosition(1, 1);
-        realm.addClaimFromWorldPosition(1, 1);
+        realm.addClaim(GridCoord.getFromWorldPosition(0, 0));
+        realm.addClaim(GridCoord.getFromWorldPosition(0, 1));
+        realm.addClaim(GridCoord.getFromWorldPosition(1, 1));
+        realm.addClaim(GridCoord.getFromWorldPosition(1, 1));
         assertEquals(true, realm.getClaims().size() == 1);
         int size = Registry.getInstance().getRealms().size();
-        realm.removeClaimFromGridPosition(0, 0);
+        realm.removeClaim(GridCoord.getFromGridPosition(0, 0));
         assertEquals(true, Registry.getInstance().getRealms().size() == size - 1);
         Registry.resetInstance();
     }
@@ -152,9 +152,9 @@ public class AppTest {
     @Test
     public void directBorderTest() throws FeudalismException {
         Realm realm = new Realm();
-        realm.addClaimFromGridPosition(0, 0);
-        GridCoord coord = GridCoord.getFromGridPosition(1, 0);
-        GridCoord coordNot = GridCoord.getFromGridPosition(2, 0);
+        realm.addClaim(GridCoord.getFromGridPosition(1, 0));
+        GridCoord coord = GridCoord.getFromGridPosition(2, 0);
+        GridCoord coordNot = GridCoord.getFromGridPosition(3, 0);
         assertEquals(true, realm.hasDirectBorder(coord));
         assertEquals(false, realm.hasDirectBorder(coordNot));
         Registry.resetInstance();

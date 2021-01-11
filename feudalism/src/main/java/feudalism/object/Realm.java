@@ -222,42 +222,20 @@ public class Realm implements Printable, Readable {
         return descendants;
     }
 
-    public void addClaimFromGridPosition(int x, int z) {
-        GridCoord coord = GridCoord.getFromGridPosition(x, z);
-        if (!hasClaim(coord)) {
-            addClaim(coord);
-        }
-    }
-
-    public void removeClaimFromGridPosition(int x, int z) {
-        GridCoord coord = GridCoord.getFromGridPosition(x, z);
-        removeClaim(coord);
-    }
-
-    public void addClaimFromWorldPosition(int x, int z) {
-        GridCoord coord = GridCoord.getFromWorldPosition(x, z);
-        if (!hasClaim(coord)) {
-            addClaim(coord);
-        }
-    }
-
-    public void removeClaimFromWorldPosition(int x, int z) {
-        GridCoord coord = GridCoord.getFromWorldPosition(x, z);
-        removeClaim(coord);
-    }
-
     public List<GridCoord> getClaims() {
         return claims;
     }
 
     public void addClaim(GridCoord coord) {
-        claims.add(coord);
-        try {
-            if (!coord.hasOwner() || coord.getOwner() != this) {
-                coord.setOwner(this);
+        if (!hasClaim(coord)) {
+            claims.add(coord);
+            try {
+                if (!coord.hasOwner() || coord.getOwner() != this) {
+                    coord.setOwner(this);
+                }
+            } catch (FeudalismException e) {
+                e.printStackTrace();
             }
-        } catch (FeudalismException e) {
-            e.printStackTrace();
         }
     }
 
