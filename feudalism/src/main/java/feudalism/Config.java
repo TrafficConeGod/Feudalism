@@ -28,6 +28,7 @@ public class Config {
             {
                 Map<String, Object> map = new HashMap<>();
                 map.put("world", "world");
+                map.put("border_radius", 10);
                 configSchema.put("realm", map);
             }
             // grid_coord config

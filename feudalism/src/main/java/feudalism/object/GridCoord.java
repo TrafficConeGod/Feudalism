@@ -107,6 +107,16 @@ public class GridCoord implements Printable, Readable {
         return getFromWorldPosition((int) location.getX(), (int) location.getZ());
     }
 
+    public static boolean hasInGridPosition(int x, int z) {
+        return Registry.getInstance().hasGridCoord(x, z);
+    }
+
+    public static boolean hasInWorldPosition(int x, int z) {
+        x = x / getSize();
+        z = z / getSize();
+        return GridCoord.hasInGridPosition(x, z);
+    }
+
     public void destroy() {
         Registry.getInstance().removeGridCoord(this);
     }

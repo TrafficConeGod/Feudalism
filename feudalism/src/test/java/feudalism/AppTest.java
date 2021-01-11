@@ -161,6 +161,17 @@ public class AppTest {
         Registry.resetInstance();
     }
 
+    @Test
+    public void borderRadiusTest() throws FeudalismException {
+        Realm realm = new Realm();
+        realm.addClaim(GridCoord.getFromGridPosition(1, 0));
+        GridCoord coord = GridCoord.getFromGridPosition(5, 0);
+        GridCoord coordNot = GridCoord.getFromGridPosition(12, 0);
+        assertEquals(true, realm.isWithinBorderRadius(coord));
+        assertEquals(false, realm.isWithinBorderRadius(coordNot));
+        Registry.resetInstance();
+    }
+
     // @Test
     // public void configTest() throws FeudalismException, IOException {
     //     File configFile = new File("config.lua");

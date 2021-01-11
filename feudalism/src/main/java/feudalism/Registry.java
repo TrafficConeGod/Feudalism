@@ -24,7 +24,6 @@ import org.bukkit.World;
 
 /* TODO:
 Add FeudalismUser
-Block addClaim if it is not directly bordering your realm
 Only allow sieges to be started if defender is within x GridCoords of attacker
 */
 

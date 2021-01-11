@@ -306,6 +306,31 @@ public class Realm implements Printable, Readable {
         return false;
     }
 
+    private int getBorderRadius() {
+        return Config.getInt("realm.border_radius");
+    }
+
+    public boolean isWithinBorderRadius(GridCoord coord) {
+        int borderRadius = getBorderRadius();
+        int gridX = coord.getGridX();
+        int gridZ = coord.getGridZ();
+        int topX = gridX - borderRadius;
+        int bottomX = gridX + borderRadius;
+        int topZ = gridZ - borderRadius;
+        int bottomZ = gridZ + borderRadius;
+        for (int x = topX; x < bottomX; x++) {
+            for (int z = topZ; z < bottomZ; z++) {
+                if (GridCoord.hasInGridPosition(x, z)) {
+                    GridCoord checkCoord = GridCoord.getFromGridPosition(x, z);
+                    if (hasClaim(checkCoord)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
         list.add(uuid.toString());
