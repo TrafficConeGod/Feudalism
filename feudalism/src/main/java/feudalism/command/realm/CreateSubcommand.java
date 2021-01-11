@@ -31,9 +31,9 @@ public class CreateSubcommand extends SubcommandBase {
         }
         Player player = (Player) sender;
         String name = args[0];
-        Realm realm = new Realm(User.get(player.getUniqueId()), name);
-        realm.addClaim(GridCoord.getFromWorldPosition((int) player.getLocation().getX(), (int) player.getLocation().getZ()));
+        GridCoord coord = GridCoord.getFromWorldPosition((int) player.getLocation().getX(), (int) player.getLocation().getZ());
+        Realm realm = new Realm(User.get(player.getUniqueId()), name, coord);
         GridCoord claim = realm.getClaims().get(0);
-        Chat.sendMessage(player, String.format("Created realm with name %s at: %s, %s", realm.getName(), claim.getGridX(), claim.getGridZ()));
+        Chat.sendMessage(player, String.format("Created realm with name %s at: %s, %s", realm.getName(), claim.getWorldX(), claim.getWorldZ()));
     }
 }

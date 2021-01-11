@@ -21,5 +21,6 @@ public class ResetSubcommand extends SubcommandBase {
     @Override
     public void onExecute(CommandSender sender, String[] args) throws FeudalismException {
         Registry.resetInstance();
+        Chat.sendMessage(sender, "Cleared Registry");
     }
 }

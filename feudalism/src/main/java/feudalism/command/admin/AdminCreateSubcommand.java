@@ -25,8 +25,15 @@ public class AdminCreateSubcommand extends SubcommandBase {
         String name = args[0];
         String ownerName = args[1];
         User owner = User.get(Util.getPlayerUuidByName(ownerName));
-        Realm realm = new Realm(owner, name);
-        realm.addClaim(GridCoord.getFromGridPosition(0, 0));
+        GridCoord coord;
+        if (args.length == 4) {
+            int x = Integer.valueOf(args[2]);
+            int z = Integer.valueOf(args[3]);
+            coord = GridCoord.getFromGridPosition(x, z);
+        } else {
+            coord = GridCoord.getFromGridPosition(0, 0);
+        }
+        Realm realm = new Realm(owner, name, coord);
         System.out.println(realm);
     }
 }

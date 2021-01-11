@@ -49,10 +49,14 @@ public class Realm implements Printable, Readable {
         Registry.getInstance().addTopRealm(this);
     }
 
-    public Realm(User owner, String name) throws FeudalismException {
+    public Realm(User owner, String name, GridCoord coord) throws FeudalismException {
+        if (coord.hasOwner()) {
+            throw new FeudalismException(String.format("%s, %s is already owned by another realm", coord.getWorldX(), coord.getWorldZ()));
+        }
         uuid = UUID.randomUUID();
         setOwner(owner);
         setName(name);
+        addClaim(coord);
         Registry.getInstance().addRealm(this);
         Registry.getInstance().addTopRealm(this);
     }
