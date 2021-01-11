@@ -12,6 +12,7 @@ import ca.uqac.lif.azrael.Printable;
 import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.Readable;
 import feudalism.Config;
+import feudalism.FeudalismException;
 import feudalism.Registry;
 
 public class GridCoord implements Printable, Readable {
@@ -61,7 +62,10 @@ public class GridCoord implements Printable, Readable {
         }
     }
 
-    public Realm getOwner() {
+    public Realm getOwner() throws FeudalismException {
+        if (!hasOwner()) {
+            throw new FeudalismException("GridCoord does not have an owner");
+        }
         return owner;
     }
 

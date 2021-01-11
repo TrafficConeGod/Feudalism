@@ -16,12 +16,15 @@ import feudalism.command.realm.RealmCommand;
 import feudalism.object.Realm;
 
 public class App extends JavaPlugin {
+    private boolean isError = false;
+
     @Override
     public void onEnable() {
         try {
             initFilesystem();
         } catch (FeudalismException e) {
             e.printStackTrace();
+            isError = true;
             return;
         }
         initCommands();
@@ -84,6 +87,8 @@ public class App extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Registry.getInstance().save();
+        if (!isError) {
+            Registry.getInstance().save();
+        }
     }
 }

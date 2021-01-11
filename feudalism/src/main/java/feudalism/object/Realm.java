@@ -82,15 +82,18 @@ public class Realm implements Printable, Readable {
         hasOwner = false;
     }
 
-    public UUID getOwner() {
+    public UUID getOwner() throws FeudalismException {
+        if (!hasOwner()) {
+            throw new FeudalismException("Realm does not have an owner");
+        }
         return owner;
     }
 
-    public Player getOwnerPlayer() {
+    public Player getOwnerPlayer() throws FeudalismException {
         return Bukkit.getPlayer(getOwner());
     }
 
-    public OfflinePlayer getOwnerOfflinePlayer() {
+    public OfflinePlayer getOwnerOfflinePlayer() throws FeudalismException {
         return Bukkit.getOfflinePlayer(getOwner());
     }
 
@@ -110,12 +113,11 @@ public class Realm implements Printable, Readable {
     }
 
     public void removeOverlord() throws FeudalismException {
-        boolean hadOverlord = hasOverlord();
+        boolean hadOverlord = hasOverlord;
         hasOverlord = false;
         // if the subject had an overlord then remove the subject from the overlords
         // subject list
         if (hadOverlord) {
-            Realm overlord = getOverlord();
             if (overlord.hasSubject(this)) {
                 overlord.removeSubject(this);
             }
@@ -123,7 +125,10 @@ public class Realm implements Printable, Readable {
         Registry.getInstance().addTopRealm(this);
     }
 
-    public Realm getOverlord() {
+    public Realm getOverlord() throws FeudalismException {
+        if (!hasOverlord()) {
+            throw new FeudalismException("Realm does not have an overlord");
+        }
         return overlord;
     }
 
@@ -134,8 +139,8 @@ public class Realm implements Printable, Readable {
         if (Registry.getInstance().isInConflict(overlord, this)) {
             throw new FeudalismException("Can't add a subject which is in conflict with the overlord");
         }
-        boolean hadOverlord = hasOverlord();
-        Realm oldOverlord = getOverlord();
+        boolean hadOverlord = hasOverlord;
+        Realm oldOverlord = this.overlord;
         hasOverlord = true;
         this.overlord = overlord;
         // if the subject had an overlord then remove the subject from the overlords
@@ -247,8 +252,12 @@ public class Realm implements Printable, Readable {
 
     public void addClaim(GridCoord coord) {
         claims.add(coord);
-        if (!coord.hasOwner() || coord.getOwner() != this) {
-            coord.setOwner(this);
+        try {
+            if (!coord.hasOwner() || coord.getOwner() != this) {
+                coord.setOwner(this);
+            }
+        } catch (FeudalismException e) {
+            e.printStackTrace();
         }
     }
 
@@ -280,15 +289,20 @@ public class Realm implements Printable, Readable {
     }
 
     public String getInfo() {
-        return String.format("UUID: %s\nName: %s\nOwner: %s\nOverlord: %s\nSubjects: %s\nMembers: %s\nClaims: %s",
-            getUuid().toString(),
-            getName(),
-            hasOwner() ? getOwnerOfflinePlayer().getName() : "None",
-            hasOverlord() ? getOverlord().getName() : "None",
-            getSubjects().size(),
-            members.size(),
-            claims.size()
-        );
+        try {
+			return String.format("UUID: %s\nName: %s\nOwner: %s\nOverlord: %s\nSubjects: %s\nMembers: %s\nClaims: %s",
+			    getUuid().toString(),
+			    getName(),
+			    hasOwner() ? getOwnerOfflinePlayer().getName() : "None",
+			    hasOverlord() ? getOverlord().getName() : "None",
+			    getSubjects().size(),
+			    members.size(),
+			    claims.size()
+			);
+		} catch (FeudalismException e) {
+			e.printStackTrace();
+		}
+        return name;
     }
 
     public Object print(ObjectPrinter<?> printer) throws PrintException {
@@ -304,7 +318,7 @@ public class Realm implements Printable, Readable {
         list.add(claims);
         list.add(hasOwner());
         if (hasOwner()) {
-            list.add(getOwner().toString());
+            list.add(owner.toString());
         }
         return printer.print(list);
     }
