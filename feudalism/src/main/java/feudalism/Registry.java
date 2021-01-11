@@ -23,10 +23,6 @@ import feudalism.object.User;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-/* TODO:
-Add FeudalismUser
-*/
-
 public class Registry implements Printable, Readable {
     public Registry() {
         int size = Config.getInt("#siege.goals");
