@@ -47,7 +47,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1) {
             Chat.sendErrorMessage(sender, "Not enough arguments for command");
-            return false;
+            return true;
         }
         String alias = args[0];
         try {
@@ -57,7 +57,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
             return true;
         } catch (FeudalismException e) {
             Chat.sendErrorMessage(sender, e.getMessage());
-            return false;
+            return true;
         }
     }
 
