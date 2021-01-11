@@ -25,7 +25,13 @@ public class Siege implements Printable, Readable {
 
     }
 
-    public Siege(Realm attacker, Realm defender, SiegeGoal goal) {
+    public Siege(Realm attacker, Realm defender, SiegeGoal goal) throws FeudalismException {
+        if (attacker.hasDescendantSubject(defender) || defender.hasDescendantSubject(attacker)) {
+            throw new FeudalismException(String.format("%s and %s are subjects of each other", attacker.getName(), defender.getName()));
+        }
+        if (!attacker.isWithinBorderRadius(defender)) {
+            throw new FeudalismException(String.format("%s is not within border radius distance of %s", attacker.getName(), defender.getName()));
+        }
         this.attacker = attacker;
         this.defender = defender;
         this.goal = goal;

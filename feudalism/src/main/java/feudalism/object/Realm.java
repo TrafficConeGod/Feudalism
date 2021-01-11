@@ -331,6 +331,18 @@ public class Realm implements Printable, Readable {
         return false;
     }
 
+    public boolean isWithinBorderRadius(Realm realm) {
+        if (realm.getClaims().size() <= 0) {
+            return true;
+        }
+        for (GridCoord coord : realm.getClaims()) {
+            if (isWithinBorderRadius(coord)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
         list.add(uuid.toString());

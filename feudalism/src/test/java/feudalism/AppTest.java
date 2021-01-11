@@ -104,7 +104,8 @@ public class AppTest {
         try {
             r2.setOverlord(r1);
             assertEquals(true, false);
-        } catch (FeudalismException e) {}
+        } catch (FeudalismException e) {
+        }
         assertEquals(false, r2.hasOverlord());
         siege.win(r1, new ArrayList<>());
         assertEquals(true, r2.getOverlord() == r1);
@@ -169,6 +170,22 @@ public class AppTest {
         GridCoord coordNot = GridCoord.getFromGridPosition(12, 0);
         assertEquals(true, realm.isWithinBorderRadius(coord));
         assertEquals(false, realm.isWithinBorderRadius(coordNot));
+        Registry.resetInstance();
+    }
+
+    @Test
+    public void siegeBorderRadiusTest() throws FeudalismException {
+        assertEquals(true, Registry.getInstance().hasSiegeGoal("subjugate"));
+        Realm r1 = new Realm();
+        r1.addClaim(GridCoord.getFromGridPosition(0, 0));
+        Realm r2 = new Realm();
+        r2.addClaim(GridCoord.getFromGridPosition(50, 10));
+        try {
+            new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
+            assertEquals(true, false);
+        } catch (FeudalismException e) {
+            assertEquals(true, true);
+        }
         Registry.resetInstance();
     }
 
