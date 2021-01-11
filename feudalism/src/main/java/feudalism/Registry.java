@@ -216,6 +216,7 @@ public class Registry implements Printable, Readable {
     @Override
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
+        list.add(users);
         list.add(getTopRealms());
         list.add(getSieges());
         return printer.print(list);
@@ -226,10 +227,13 @@ public class Registry implements Printable, Readable {
         try {
             List<Object> list = (ArrayList<Object>) reader.read(object);
             Registry registry = new Registry();
-            for (Realm realm : (ArrayList<Realm>) list.get(0)) {
+            for (User user : (ArrayList<User>) list.get(0)) {
+                registry.addUser(user);
+            }
+            for (Realm realm : (ArrayList<Realm>) list.get(1)) {
                 registry.addTopRealm(realm);
             }
-            for (Siege siege : (ArrayList<Siege>) list.get(1)) {
+            for (Siege siege : (ArrayList<Siege>) list.get(2)) {
                 registry.addSiege(siege);
             }
             return registry;

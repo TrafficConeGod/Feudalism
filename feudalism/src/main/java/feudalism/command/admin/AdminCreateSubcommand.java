@@ -9,6 +9,7 @@ import feudalism.Util;
 import feudalism.command.SubcommandBase;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
+import feudalism.object.User;
 
 public class AdminCreateSubcommand extends SubcommandBase {
     @Override
@@ -23,7 +24,7 @@ public class AdminCreateSubcommand extends SubcommandBase {
         }
         String name = args[0];
         String ownerName = args[1];
-        UUID owner = Util.getPlayerUuidByName(ownerName);
+        User owner = User.get(Util.getPlayerUuidByName(ownerName));
         Realm realm = new Realm(owner, name);
         realm.addClaim(GridCoord.getFromGridPosition(0, 0));
         System.out.println(realm);
