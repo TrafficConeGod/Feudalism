@@ -30,6 +30,7 @@ public class Realm implements Printable, Readable {
     private Realm overlord;
 
     private List<Realm> subjects = new ArrayList<>();
+    private List<Realm> descendantSubjects = new ArrayList<>();
 
     private List<UUID> members = new ArrayList<>();
 
@@ -125,6 +126,7 @@ public class Realm implements Printable, Readable {
             if (overlord.hasSubject(this)) {
                 overlord.removeSubject(this);
             }
+            overlord.removeDescendantSubject(this);
         }
         Registry.getInstance().addTopRealm(this);
     }
@@ -157,6 +159,7 @@ public class Realm implements Printable, Readable {
         if (!overlord.hasSubject(this)) {
             overlord.addSubject(this);
         }
+        overlord.addDescendantSubject(this);
         Registry.getInstance().removeTopRealm(this);
     }
 
@@ -176,6 +179,16 @@ public class Realm implements Printable, Readable {
         if (!subject.hasOverlord() || subject.getOverlord() != this) {
             subject.setOverlord(this);
         }
+    }
+
+    private void addDescendantSubject(Realm desc) {
+        descendantSubjects.add(desc);
+        descendantSubjects.addAll(desc.getDescendantSubjects());
+    }
+
+    private void removeDescendantSubject(Realm desc) {
+        descendantSubjects.remove(desc);
+        descendantSubjects.removeAll(desc.getDescendantSubjects());
     }
 
     public boolean hasSubject(Realm subject) {
@@ -218,12 +231,7 @@ public class Realm implements Printable, Readable {
     }
 
     public List<Realm> getDescendantSubjects() {
-        List<Realm> descendants = new ArrayList<>();
-        descendants.addAll(getSubjects());
-        for (Realm desc : descendants) {
-            descendants.addAll(desc.getDescendantSubjects());
-        }
-        return descendants;
+        return descendantSubjects;
     }
 
     public List<GridCoord> getClaims() {

@@ -51,6 +51,19 @@ public class AppTest {
     }
 
     @Test
+    public void descendantSubjectsTest() throws FeudalismException {
+        Realm tr = new Realm();
+        Realm mr = new Realm();
+        Realm br = new Realm();
+        br.setOverlord(mr);
+        mr.setOverlord(tr);
+        assertEquals(true, tr.getDescendantSubjects().size() == 2);
+        mr.removeOverlord();
+        assertEquals(true, tr.getDescendantSubjects().size() == 0);
+        Registry.resetInstance();
+    }
+
+    @Test
     public void azraelRealmTest() throws PrintException, ReadException, FeudalismException {
         User user = User.get(UUID.randomUUID());
         Realm realm = new Realm();
