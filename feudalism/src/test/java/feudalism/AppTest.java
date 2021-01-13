@@ -66,9 +66,11 @@ public class AppTest {
     @Test
     public void azraelRealmTest() throws PrintException, ReadException, FeudalismException {
         User user = User.get(UUID.randomUUID());
+        User member = User.get(UUID.randomUUID());
         Realm realm = new Realm();
         realm.setName("Test");
         realm.setOwner(user);
+        realm.addMember(member);
         Realm r2 = new Realm();
         r2.setName("Test2");
         r2.setOverlord(realm);
@@ -83,6 +85,8 @@ public class AppTest {
         assertEquals(true, realm.getOwner().equals(realmReconstruct.getOwner()));
         assertEquals(true, realm.getClaims().size() == realmReconstruct.getClaims().size());
         assertEquals(true, user == realmReconstruct.getOwner());
+        assertEquals(true, realm.getMembers().size() == 1);
+        assertEquals(true, realm.getMembers().get(0) == member);
         Registry.resetInstance();
     }
 

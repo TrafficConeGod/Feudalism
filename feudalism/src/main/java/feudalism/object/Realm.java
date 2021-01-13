@@ -32,7 +32,7 @@ public class Realm implements Printable, Readable {
     private List<Realm> subjects = new ArrayList<>();
     private List<Realm> descendantSubjects = new ArrayList<>();
 
-    private List<UUID> members = new ArrayList<>();
+    private List<User> members = new ArrayList<>();
 
     private String name = "RealmName";
 
@@ -105,7 +105,10 @@ public class Realm implements Printable, Readable {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(User owner) throws FeudalismException {
+        if (hasMember(owner)) {
+            throw new FeudalismException("Can not set overlord to a member of the realm");
+        }
         hasOwner = true;
         this.owner = owner;
         if (!owner.ownsRealm(this)) {
@@ -210,16 +213,23 @@ public class Realm implements Printable, Readable {
         }
     }
 
-    public void addMember(UUID member) {
-        members.add(uuid);
+    public void addMember(User member) throws FeudalismException {
+        if (hasOwner() && member == owner) {
+            throw new FeudalismException("Member can not be owner of the realm");
+        }
+        members.add(member);
     }
 
-    public boolean hasMember(UUID member) {
+    public boolean hasMember(User member) {
         return members.contains(member);
     }
 
-    public void removeMember(UUID member) {
+    public void removeMember(User member) {
         members.remove(member);
+    }
+
+    public List<User> getMembers() {
+        return members;
     }
 
     public String getName() {
@@ -355,7 +365,7 @@ public class Realm implements Printable, Readable {
         list.add(uuid.toString());
         list.add(subjects);
         List<String> members = new ArrayList<>();
-        for (UUID member : this.members) {
+        for (User member : this.members) {
             members.add(member.toString());
         }
         list.add(members);
@@ -379,7 +389,7 @@ public class Realm implements Printable, Readable {
             }
             List<String> members = (ArrayList<String>) list.get(2);
             for (String member : members) {
-                realm.addMember(UUID.fromString(member));
+                realm.addMember(User.get(UUID.fromString(member)));
             }
             List<GridCoord> claims = (ArrayList<GridCoord>) list.get(4);
             for (GridCoord coord : claims) {
