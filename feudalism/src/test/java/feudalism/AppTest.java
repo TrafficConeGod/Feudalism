@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import feudalism.object.GridCoord;
+import feudalism.object.PermType;
 import feudalism.object.Perms;
 import feudalism.object.Realm;
 import feudalism.object.Siege;
@@ -72,6 +73,11 @@ public class AppTest {
         realm.setName("Test");
         realm.setOwner(user);
         realm.addMember(member);
+        PermType blockPlace = Registry.getInstance().getPermType("block_place");
+        assertEquals(true, realm.getPerm(user, blockPlace));
+        assertEquals(false, realm.getPerm(member, blockPlace));
+        realm.getMemberPerms().set(blockPlace, true);
+        assertEquals(true, realm.getPerm(member, blockPlace));
         Realm r2 = new Realm();
         r2.setName("Test2");
         r2.setOverlord(realm);
@@ -86,8 +92,10 @@ public class AppTest {
         assertEquals(true, realm.getOwner().equals(realmReconstruct.getOwner()));
         assertEquals(true, realm.getClaims().size() == realmReconstruct.getClaims().size());
         assertEquals(true, user == realmReconstruct.getOwner());
-        assertEquals(true, realm.getMembers().size() == 1);
-        assertEquals(true, realm.getMembers().get(0) == member);
+        assertEquals(true, realmReconstruct.getMembers().size() == 1);
+        assertEquals(true, realmReconstruct.getMembers().get(0) == member);
+        assertEquals(true, realmReconstruct.getPerm(user, blockPlace));
+        assertEquals(true, realmReconstruct.getPerm(member, blockPlace));
         Registry.resetInstance();
     }
 
@@ -254,9 +262,9 @@ public class AppTest {
     public void permsTest() throws FeudalismException {
         assertEquals(true, Registry.getInstance().hasPermType("block_place"));
         Perms perms = new Perms();
-        assertEquals(true, perms.getPermStatus(Registry.getInstance().getPermType("block_place")) == false);
-        perms.changePermStatus(Registry.getInstance().getPermType("block_place"), true);
-        assertEquals(true, perms.getPermStatus(Registry.getInstance().getPermType("block_place")) == true);
+        assertEquals(true, perms.get(Registry.getInstance().getPermType("block_place")) == false);
+        perms.set(Registry.getInstance().getPermType("block_place"), true);
+        assertEquals(true, perms.get(Registry.getInstance().getPermType("block_place")) == true);
         Registry.resetInstance();
     }
 

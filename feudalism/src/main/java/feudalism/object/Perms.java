@@ -22,11 +22,11 @@ public class Perms implements Printable, Readable {
         this.enabledTypes = enabledTypes;
     }
 
-    public void changePermStatus(PermType type, boolean status) {
+    public void set(PermType type, boolean status) {
         enabledTypes.put(type.getName(), status);
     }
 
-    public boolean getPermStatus(PermType type) {
+    public boolean get(PermType type) {
         if (enabledTypes.containsKey(type.getName())) {
             return enabledTypes.get(type.getName());
         }

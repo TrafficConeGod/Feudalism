@@ -38,7 +38,10 @@ public class Realm implements Printable, Readable {
 
     private List<GridCoord> claims = new ArrayList<>();
 
+    private Perms outsiderPerms = new Perms();
     private Perms memberPerms = new Perms();
+    private Perms subjectPerms = new Perms();
+    private Perms overlordPerms = new Perms();
 
     public Realm() throws FeudalismException {
         uuid = UUID.randomUUID();
@@ -362,6 +365,60 @@ public class Realm implements Printable, Readable {
         return false;
     }
 
+    public void setOutsiderPerms(Perms perms) {
+        outsiderPerms = perms;
+    }
+
+    public Perms getOutsiderPerms() {
+        return outsiderPerms;
+    };
+
+    public void setMemberPerms(Perms perms) {
+        memberPerms = perms;
+    }
+
+    public Perms getMemberPerms() {
+        return memberPerms;
+    }
+
+    public void setSubjectPerms(Perms perms) {
+        subjectPerms = perms;
+    }
+
+    public Perms getSubjectPerms() {
+        return subjectPerms;
+    }
+
+    public void setOverlordPerms(Perms perms) {
+        overlordPerms = perms;
+    }
+
+    public Perms getOverlordPerms() {
+        return overlordPerms;
+    }
+
+    public Perms getPerms(User user) {
+        if (members.contains(user)) {
+            return memberPerms;
+        }
+        for (Realm realm : user.getOwnedRealms()) {
+            if (realm.getDescendantSubjects().contains(this)) {
+                return overlordPerms;
+            } else if (descendantSubjects.contains(realm)) {
+                return subjectPerms;
+            }
+        }
+        return outsiderPerms;
+    }
+
+    public boolean getPerm(User user, PermType type) {
+        if (user.ownsRealm(this)) {
+            return true;
+        }
+        Perms perms = getPerms(user);
+        return perms.get(type);
+    }
+
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();
         list.add(uuid.toString());
@@ -376,7 +433,13 @@ public class Realm implements Printable, Readable {
         list.add(hasOwner());
         if (hasOwner()) {
             list.add(owner.toString());
+        } else {
+            list.add("");
         }
+        list.add(outsiderPerms);
+        list.add(memberPerms);
+        list.add(subjectPerms);
+        list.add(overlordPerms);
         return printer.print(list);
     }
 
@@ -400,6 +463,10 @@ public class Realm implements Printable, Readable {
             if ((boolean) list.get(5)) {
                 realm.setOwner(Registry.getInstance().getUserByUuid(UUID.fromString((String) list.get(6))));
             }
+            realm.setOutsiderPerms((Perms) list.get(7));
+            realm.setMemberPerms((Perms) list.get(8));
+            realm.setSubjectPerms((Perms) list.get(9));
+            realm.setOverlordPerms((Perms) list.get(10));
             return realm;
         } catch (FeudalismException e) {
             throw new ReadException(e);
