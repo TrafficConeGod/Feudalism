@@ -29,9 +29,9 @@ public class User implements Printable, Readable {
 
     public User() throws FeudalismException {
         uuid = UUID.randomUUID();
-        if (!Util.isValidPlayerUuid(uuid)) {
-            throw new FeudalismException(String.format("%s is not a valid player uuid", uuid.toString()));
-        }
+        // if (!Util.isValidPlayerUuid(uuid)) {
+        //     throw new FeudalismException(String.format("%s is not a valid player uuid", uuid.toString()));
+        // }
         Registry.getInstance().addUser(this);
     }
 

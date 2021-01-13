@@ -26,6 +26,18 @@ public class App extends JavaPlugin {
             e.printStackTrace();
             isError = true;
             return;
+        } catch (FridgeException e) {
+            e.printStackTrace();
+            isError = true;
+            return;
+        } catch (IOException e) {
+            e.printStackTrace();
+            isError = true;
+            return;
+        } catch (PrintException e) {
+            e.printStackTrace();
+            isError = true;
+            return;
         }
         initCommands();
         for (Realm realm : Registry.getInstance().getTopRealms()) {
@@ -33,7 +45,7 @@ public class App extends JavaPlugin {
         }
     }
 
-    private void initFilesystem() throws FeudalismException {
+    private void initFilesystem() throws FeudalismException, FridgeException, IOException, PrintException {
         File dir = new File("plugins/feudalism");
         if (!dir.exists()) {
             dir.mkdirs();
@@ -41,43 +53,26 @@ public class App extends JavaPlugin {
         // config setup
         File configFile = new File("plugins/feudalism/config.lua");
         if (!configFile.exists()) {
-            try {
-                FileWriter writer = new FileWriter("plugins/feudalism/config.lua");
-                writer.write(Config.generate());
-                writer.close();
-            } catch (IOException e) {
-                configFile.delete();
-                throw new FeudalismException("IOException: " + e.getMessage());
-            }
+            FileWriter writer = new FileWriter("plugins/feudalism/config.lua");
+            writer.write(Config.generate());
+            writer.close();
         }
         Config.loadFile("plugins/feudalism/config.lua");
         // registry and fridge setup
         File fridgeFile = new File("plugins/feudalism/fridge.json");
         if (!fridgeFile.exists()) {
-            try {
-                fridgeFile.createNewFile();
-                FileWriter writer = new FileWriter("plugins/feudalism/fridge.json");
-                JsonPrinter printer = new JsonPrinter();
-                JsonElement elem = printer.print(Registry.getInstance());
-                writer.write(elem.toString());
-                writer.close();
-            } catch (IOException e) {
-                fridgeFile.delete();
-                throw new FeudalismException("IOException: " + e.getMessage());
-            } catch (PrintException e) {
-                fridgeFile.delete();
-                throw new FeudalismException("PrintException: " + e.getMessage());
-            }
+            fridgeFile.createNewFile();
+            FileWriter writer = new FileWriter("plugins/feudalism/fridge.json");
+            JsonPrinter printer = new JsonPrinter();
+            JsonElement elem = printer.print(Registry.getInstance());
+            writer.write(elem.toString());
+            writer.close();
         }
         JsonFileFridge fridge = new JsonFileFridge("plugins/feudalism/fridge.json");
-        try {
-            Registry registry = (Registry) fridge.fetch();
-            registry.setFridge(fridge);
-            Registry.setInstance(registry);
-            Registry.getInstance().initWorld();
-        } catch (FridgeException e) {
-            throw new FeudalismException("FridgeException: " + e.getMessage());
-        }
+        Registry registry = (Registry) fridge.fetch();
+        registry.setFridge(fridge);
+        Registry.setInstance(registry);
+        Registry.getInstance().initWorld();
     }
 
     private void initCommands() {
