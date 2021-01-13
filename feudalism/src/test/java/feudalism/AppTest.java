@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.junit.Test;
 
 import feudalism.object.GridCoord;
+import feudalism.object.Perms;
 import feudalism.object.Realm;
 import feudalism.object.Siege;
 import feudalism.object.SiegeGoal;
@@ -246,6 +247,16 @@ public class AppTest {
         } catch (FeudalismException e) {
             assertEquals(true, true);
         }
+        Registry.resetInstance();
+    }
+
+    @Test
+    public void permsTest() throws FeudalismException {
+        assertEquals(true, Registry.getInstance().hasPermType("block_place"));
+        Perms perms = new Perms();
+        assertEquals(true, perms.getPermStatus(Registry.getInstance().getPermType("block_place")) == false);
+        perms.changePermStatus(Registry.getInstance().getPermType("block_place"), true);
+        assertEquals(true, perms.getPermStatus(Registry.getInstance().getPermType("block_place")) == true);
         Registry.resetInstance();
     }
 

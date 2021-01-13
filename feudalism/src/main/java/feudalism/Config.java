@@ -30,6 +30,23 @@ public class Config {
                 map.put("world", "world");
                 map.put("border_radius", 10);
                 map.put("upkeep_factor", 10);
+                // realm.perms config
+                {
+                    List<Object> list = new ArrayList<>();
+                    {
+                        Map<String, Object> submap = new HashMap<>();
+                        submap.put("name", "block_place");
+                        submap.put("display_name", "Place Block");
+                        submap.put("default", false);
+                        {
+                            List<Object> sublist = new ArrayList<>();
+                            sublist.add("block_place");
+                            submap.put("events", sublist);
+                        }
+                        list.add(submap);
+                    }
+                    map.put("perms", list);
+                }
                 configSchema.put("realm", map);
             }
             // grid_coord config
@@ -41,36 +58,39 @@ public class Config {
             // siege config
             {
                 Map<String, Object> map = new HashMap<>();
-                List<Object> list = new ArrayList<>();
+                // siege.goals config
                 {
-                    Map<String, Object> submap = new HashMap<>();
-                    submap.put("name", "ruler_change");
-                    submap.put("display_name", "Demand Ruler Change");
+                    List<Object> list = new ArrayList<>();
                     {
-                        List<Object> sublist = new ArrayList<>();
-                        sublist.add("new_ruler");
-                        submap.put("props", sublist);
+                        Map<String, Object> submap = new HashMap<>();
+                        submap.put("name", "ruler_change");
+                        submap.put("display_name", "Demand Ruler Change");
+                        {
+                            List<Object> sublist = new ArrayList<>();
+                            sublist.add("new_ruler");
+                            submap.put("props", sublist);
+                        }
+                        submap.put("on_peace", new ConfigFunction("victor, loser, props", "local new_ruler = Util:getPlayerUuidByName(props.new_ruler);\nloser:setOwner(new_ruler);"));
+                        list.add(submap);
                     }
-                    submap.put("on_peace", new ConfigFunction("victor, loser, props", "local new_ruler = Util:getPlayerUuidByName(props.new_ruler);\nloser:setOwner(new_ruler);"));
-                    list.add(submap);
+                    {
+                        Map<String, Object> submap = new HashMap<>();
+                        submap.put("name", "subjugate");
+                        submap.put("display_name", "Subjugate");
+                        submap.put("props", new ArrayList<>());
+                        submap.put("on_peace", new ConfigFunction("victor, loser", "victor:addSubject(loser);"));
+                        list.add(submap);
+                    }
+                    {
+                        Map<String, Object> submap = new HashMap<>();
+                        submap.put("name", "personal_union");
+                        submap.put("display_name", "Demand Personal Union");
+                        submap.put("props", new ArrayList<>());
+                        submap.put("on_peace", new ConfigFunction("victor, loser", "loser:setOwner(victor:getOwner());"));
+                        list.add(submap);
+                    }
+                    map.put("goals", list);
                 }
-                {
-                    Map<String, Object> submap = new HashMap<>();
-                    submap.put("name", "subjugate");
-                    submap.put("display_name", "Subjugate");
-                    submap.put("props", new ArrayList<>());
-                    submap.put("on_peace", new ConfigFunction("victor, loser", "victor:addSubject(loser);"));
-                    list.add(submap);
-                }
-                {
-                    Map<String, Object> submap = new HashMap<>();
-                    submap.put("name", "personal_union");
-                    submap.put("display_name", "Demand Personal Union");
-                    submap.put("props", new ArrayList<>());
-                    submap.put("on_peace", new ConfigFunction("victor, loser", "loser:setOwner(victor:getOwner());"));
-                    list.add(submap);
-                }
-                map.put("goals", list);
                 configSchema.put("siege", map);
             }
         }

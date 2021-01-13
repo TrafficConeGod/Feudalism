@@ -15,6 +15,7 @@ import ca.uqac.lif.azrael.Readable;
 import ca.uqac.lif.azrael.fridge.FridgeException;
 import ca.uqac.lif.azrael.json.JsonFileFridge;
 import feudalism.object.GridCoord;
+import feudalism.object.PermType;
 import feudalism.object.Realm;
 import feudalism.object.Siege;
 import feudalism.object.SiegeGoal;
@@ -25,9 +26,17 @@ import org.bukkit.World;
 
 public class Registry implements Printable, Readable {
     public Registry() {
-        int size = Config.getInt("#siege.goals");
-        for (int i = 1; i <= size; i++) {
-            siegeGoals.add(new SiegeGoal(i));
+        {
+            int size = Config.getInt("#siege.goals");
+            for (int i = 1; i <= size; i++) {
+                siegeGoals.add(new SiegeGoal(i));
+            }
+        }
+        {
+            int size = Config.getInt("#realm.perms");
+            for (int i = 1; i <= size; i++) {
+                permTypes.add(new PermType(i));
+            }
         }
     }
 
@@ -59,6 +68,7 @@ public class Registry implements Printable, Readable {
     private List<Realm> realms = new ArrayList<>();
     private Map<Integer, Map<Integer, GridCoord>> gridCoordCache = new HashMap<>();
     private List<SiegeGoal> siegeGoals = new ArrayList<>();
+    private List<PermType> permTypes = new ArrayList<>();
     private World world;
 
     public void setFridge(JsonFileFridge fridge) {
@@ -167,13 +177,31 @@ public class Registry implements Printable, Readable {
         return false;
     }
     
-    public SiegeGoal getSiegeGoal(String name) {
+    public SiegeGoal getSiegeGoal(String name) throws FeudalismException {
         for (SiegeGoal goal : siegeGoals) {
             if (goal.getName().equals(name)) {
                 return goal;
             }
         }
-        return null;
+        throw new FeudalismException(String.format("No siege goal type with name %s", name));
+    }
+    
+    public boolean hasPermType(String name) {
+        for (PermType type : permTypes) {
+            if (type.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public PermType getPermType(String name) throws FeudalismException {
+        for (PermType type : permTypes) {
+            if (type.getName().equals(name)) {
+                return type;
+            }
+        }
+        throw new FeudalismException(String.format("No perm type with name %s", name));
     }
     
     // TODO: Particularly inefficient function

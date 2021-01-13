@@ -38,6 +38,8 @@ public class Realm implements Printable, Readable {
 
     private List<GridCoord> claims = new ArrayList<>();
 
+    private Perms memberPerms = new Perms();
+
     public Realm() throws FeudalismException {
         uuid = UUID.randomUUID();
         Registry.getInstance().addRealm(this);
