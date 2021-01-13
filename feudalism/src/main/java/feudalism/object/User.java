@@ -14,6 +14,7 @@ import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.Printable;
 import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.Readable;
+import feudalism.Config;
 import feudalism.FeudalismException;
 import feudalism.Registry;
 import feudalism.Util;
@@ -24,9 +25,14 @@ average feudalism user: strongguy.png
 */
 public class User implements Printable, Readable {
     private UUID uuid;
+    private List<Realm> ownedRealms = new ArrayList<>();
 
-    public User() {
-
+    public User() throws FeudalismException {
+        uuid = UUID.randomUUID();
+        if (!Util.isValidPlayerUuid(uuid)) {
+            throw new FeudalismException(String.format("%s is not a valid player uuid", uuid.toString()));
+        }
+        Registry.getInstance().addUser(this);
     }
 
     public User(UUID uuid) throws FeudalismException {
@@ -35,6 +41,10 @@ public class User implements Printable, Readable {
         }
         this.uuid = uuid;
         Registry.getInstance().addUser(this);
+    }
+
+    private static float getUpkeepFactor() {
+        return Config.getFloat("realm.upkeep_factor");
     }
 
     public static User get(UUID uuid) throws FeudalismException {
@@ -60,6 +70,41 @@ public class User implements Printable, Readable {
     @Override
     public String toString() {
         return uuid.toString();
+    }
+
+    public List<Realm> getOwnedRealms() {
+        return ownedRealms;
+    }
+
+    public boolean ownsRealm(Realm realm) {
+        return ownedRealms.contains(realm);
+    }
+
+    public void addRealm(Realm realm) {
+        ownedRealms.add(realm);
+        try {
+            if (!realm.hasOwner() || realm.getOwner() != this) {
+                realm.setOwner(this);
+            }
+        } catch (FeudalismException e) {
+            
+        }
+    }
+
+    public void removeRealm(Realm realm) {
+        ownedRealms.remove(realm);
+        if (realm.hasOwner()) {
+            realm.removeOwner();
+        }
+    }
+
+    public float getUpkeep() {
+        float upkeep = 0;
+        float upkeepFactor = getUpkeepFactor();
+        for (Realm realm : ownedRealms) {
+            upkeep += (realm.getClaims().size() * upkeepFactor);
+        }
+        return upkeep;
     }
 
     @Override

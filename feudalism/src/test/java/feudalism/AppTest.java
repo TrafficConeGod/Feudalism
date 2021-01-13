@@ -28,15 +28,25 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 public class AppTest {
     @Test
-    public void overlordSubjectLinkingTest() throws FeudalismException {
+    public void realmsTest() throws FeudalismException {
+        float upkeepFactor = Config.getFloat("realm.upkeep_factor");
+        User user = new User();
         Realm r1 = new Realm();
+        r1.addClaim(GridCoord.getFromGridPosition(0, 0));
+        r1.addClaim(GridCoord.getFromGridPosition(0, 1));
+        r1.setOwner(user);
         Realm r2 = new Realm();
+        r1.addClaim(GridCoord.getFromGridPosition(1, 0));
+        r1.addClaim(GridCoord.getFromGridPosition(1, 1));
+        r2.setOwner(user);
         r2.setOverlord(r1);
         assertEquals(true, r2.getOverlord() == r1);
         assertEquals(true, r1.getSubjects().get(0) == r2);
         r2.removeOverlord();
         assertEquals(false, r2.hasOverlord());
         assertEquals(false, r1.getSubjects().size() > 0);
+        assertEquals(true, user.getOwnedRealms().size() == 2);
+        assertEquals(true, user.getUpkeep() == upkeepFactor * 4);
         Registry.resetInstance();
     }
 

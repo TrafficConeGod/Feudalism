@@ -84,6 +84,9 @@ public class Realm implements Printable, Readable {
 
     public void removeOwner() {
         hasOwner = false;
+        if (owner.ownsRealm(this)) {
+            owner.removeRealm(this);
+        }
     }
 
     public User getOwner() throws FeudalismException {
@@ -93,9 +96,12 @@ public class Realm implements Printable, Readable {
         return owner;
     }
 
-    public void setOwner(User owner) throws FeudalismException {
+    public void setOwner(User owner) {
         hasOwner = true;
         this.owner = owner;
+        if (!owner.ownsRealm(this)) {
+            owner.addRealm(this);
+        }
     }
 
     public boolean hasOverlord() {

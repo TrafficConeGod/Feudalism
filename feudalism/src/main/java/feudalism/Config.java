@@ -29,6 +29,7 @@ public class Config {
                 Map<String, Object> map = new HashMap<>();
                 map.put("world", "world");
                 map.put("border_radius", 10);
+                map.put("upkeep_factor", 10);
                 configSchema.put("realm", map);
             }
             // grid_coord config
@@ -238,7 +239,7 @@ public class Config {
         if (val.type() == 1) {
             return val.checkboolean();
         } else if (val.type() == 3) {
-            return val.checkint();
+            return val.tofloat();
         } else if (val.type() == 4) {
             return val.checkjstring();
         } else if (val.type() == 6) {
@@ -256,9 +257,19 @@ public class Config {
         return false;
     }
 
+    public static float getFloat(String path) {
+        try {
+            return (float) get(path, 3);
+        } catch (FeudalismException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
     public static int getInt(String path) {
         try {
-            return (int) get(path, 3);
+            return (int) Math.round((float) get(path, 3));
         } catch (FeudalismException e) {
             e.printStackTrace();
         }
