@@ -1,8 +1,11 @@
 package feudalism.object;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import ca.uqac.lif.azrael.ObjectPrinter;
 import ca.uqac.lif.azrael.ObjectReader;
@@ -54,26 +57,47 @@ public class Siege implements Printable, Readable {
         return goal;
     }
 
-    public List<Realm> getAttackers() {
-        List<Realm> attackers = new ArrayList<>();
-        attackers.add(attacker);
-        attackers.addAll(attacker.getDescendantSubjects());
-        attackers.addAll(attackerAllies);
-        for (Realm realm : attackerAllies) {
-            attackers.addAll(realm.getDescendantSubjects());
+    private List<Realm> getDescendantCombatants(List<Realm> topCombatants) {
+        List<Realm> combatants = new ArrayList<>();
+        for (Realm combatant : topCombatants) {
+            combatants.add(combatant);
+            combatants.addAll(combatant.getDescendantSubjects());
         }
-        return attackers;
+        // removes all duplicates from list
+        return combatants.stream().distinct().collect(Collectors.toList());
+    }
+
+    public List<Realm> getAttackers() {
+        List<Realm> topAttackers = new ArrayList<>();
+        if (attacker.hasOwner()) {
+            try {
+                topAttackers.addAll(attacker.getOwner().getOwnedRealms());
+            } catch (FeudalismException e) {}
+        } else {
+            topAttackers.add(attacker);
+        }
+        topAttackers.addAll(attackerAllies);
+        return getDescendantCombatants(topAttackers);
     }
 
     public List<Realm> getDefenders() {
-        List<Realm> defenders = new ArrayList<>();
-        defenders.add(defender);
-        defenders.addAll(defender.getDescendantSubjects());
-        defenders.addAll(defenderAllies);
-        for (Realm realm : defenderAllies) {
-            defenders.addAll(realm.getDescendantSubjects());
+        List<Realm> topDefenders = new ArrayList<>();
+        if (defender.hasOwner()) {
+            try {
+                topDefenders.addAll(defender.getOwner().getOwnedRealms());
+            } catch (FeudalismException e) {}
+        } else {
+            topDefenders.add(defender);
         }
-        return defenders;
+        topDefenders.addAll(defenderAllies);
+        return getDescendantCombatants(topDefenders);
+    }
+
+    public List<Realm> getCombatants() {
+        List<Realm> attackers = getAttackers();
+        List<Realm> defenders = getDefenders();
+        attackers.addAll(defenders);
+        return attackers;
     }
 
     private boolean isSubject(List<Realm> possibleOverlords, Realm possibleSubject) {
@@ -91,14 +115,14 @@ public class Siege implements Printable, Readable {
             throw new FeudalismException(String.format("%s is already involved in the siege", ally));
         }
         if (side == attacker) {
-            if (isSubject(getDefenders(), ally)) {
-                throw new FeudalismException(String.format("%s is a subject of the opposite side", ally));
-            }
+            // if (isSubject(getDefenders(), ally)) {
+            //     throw new FeudalismException(String.format("%s is a subject of the opposite side", ally));
+            // }
             attackerAllies.add(ally);
         } else {
-            if (isSubject(getAttackers(), ally)) {
-                throw new FeudalismException(String.format("%s is a subject of the opposite side", ally));
-            }
+            // if (isSubject(getAttackers(), ally)) {
+            //     throw new FeudalismException(String.format("%s is a subject of the opposite side", ally));
+            // }
             defenderAllies.add(ally);
         }
     }
