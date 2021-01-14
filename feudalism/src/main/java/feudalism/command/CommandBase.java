@@ -38,7 +38,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
     private String[] getSubcommandArgs(String[] args) {
         String[] subcommandArgs = new String[args.length - 1];
         for (int i = 1; i < args.length; i++) {
-            subcommandArgs[i - 1] = args[i];
+            subcommandArgs[i - 1] = args[i].toLowerCase();
         }
         return subcommandArgs;
     }

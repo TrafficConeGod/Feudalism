@@ -85,10 +85,10 @@ public class AppTest {
         JsonReader reader = new JsonReader();
         JsonElement elem = printer.print(realm);
         Realm realmReconstruct = (Realm) reader.read(elem);
-        assertEquals(true, realm.getName() == realmReconstruct.getName());
+        assertEquals(true, (realm.getName() + "_").equals(realmReconstruct.getName()));
         assertEquals(true, realm.getUuid().equals(realmReconstruct.getUuid()));
         assertEquals(true, realm.getSubjects().size() == realmReconstruct.getSubjects().size());
-        assertEquals(true, realm.getSubjects().get(0).getName() == realmReconstruct.getSubjects().get(0).getName());
+        assertEquals(true, (realm.getSubjects().get(0).getName() + "_").equals(realmReconstruct.getSubjects().get(0).getName()));
         assertEquals(true, realm.getOwner().equals(realmReconstruct.getOwner()));
         assertEquals(true, realm.getClaims().size() == realmReconstruct.getClaims().size());
         assertEquals(true, user == realmReconstruct.getOwner());

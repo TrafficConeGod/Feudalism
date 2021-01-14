@@ -233,6 +233,15 @@ public class Registry implements Printable, Readable {
         throw new FeudalismException(String.format("No user with uuid %s", uuid.toString()));
     }
 
+    public boolean hasRealmWithName(String name) {
+        for (Realm realm : realms) {
+            if (realm.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void save() {
         try {
             fridge.store(this);

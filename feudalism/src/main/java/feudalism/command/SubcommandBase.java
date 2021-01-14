@@ -21,6 +21,6 @@ public class SubcommandBase {
     }
 
     public boolean hasAlias(String check) {
-        return Arrays.asList(getAliases()).contains(check);
+        return Arrays.asList(getAliases()).contains(check.toLowerCase());
     }
 }

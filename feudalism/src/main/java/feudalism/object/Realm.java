@@ -242,6 +242,10 @@ public class Realm implements Printable, Readable {
     }
 
     public void setName(String name) {
+        if (Registry.getInstance().hasRealmWithName(name)) {
+            setName(name + "_");
+            return;
+        }
         this.name = name;
     }
 
