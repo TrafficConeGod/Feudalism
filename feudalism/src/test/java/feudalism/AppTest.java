@@ -74,10 +74,10 @@ public class AppTest {
         realm.setOwner(user);
         realm.addMember(member);
         PermType blockPlace = Registry.getInstance().getPermType("block_place");
-        assertEquals(true, realm.getPerm(user, blockPlace));
-        assertEquals(false, realm.getPerm(member, blockPlace));
+        assertEquals(true, realm.hasPerm(user, blockPlace));
+        assertEquals(false, realm.hasPerm(member, blockPlace));
         realm.getMemberPerms().set(blockPlace, true);
-        assertEquals(true, realm.getPerm(member, blockPlace));
+        assertEquals(true, realm.hasPerm(member, blockPlace));
         Realm r2 = new Realm();
         r2.setName("Test2");
         r2.setOverlord(realm);
@@ -94,8 +94,8 @@ public class AppTest {
         assertEquals(true, user == realmReconstruct.getOwner());
         assertEquals(true, realmReconstruct.getMembers().size() == 1);
         assertEquals(true, realmReconstruct.getMembers().get(0) == member);
-        assertEquals(true, realmReconstruct.getPerm(user, blockPlace));
-        assertEquals(true, realmReconstruct.getPerm(member, blockPlace));
+        assertEquals(true, realmReconstruct.hasPerm(user, blockPlace));
+        assertEquals(true, realmReconstruct.hasPerm(member, blockPlace));
         Registry.resetInstance();
     }
 

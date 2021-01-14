@@ -106,6 +106,10 @@ public class User implements Printable, Readable {
         }
         return upkeep;
     }
+    
+    public boolean hasPerm(Realm realm, PermType type) {
+        return realm.hasPerm(this, type);
+    }
 
     @Override
     public Object print(ObjectPrinter<?> printer) throws PrintException {

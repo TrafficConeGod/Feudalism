@@ -415,7 +415,7 @@ public class Realm implements Printable, Readable {
         return outsiderPerms;
     }
 
-    public boolean getPerm(User user, PermType type) {
+    public boolean hasPerm(User user, PermType type) {
         if (user.ownsRealm(this)) {
             return true;
         }
