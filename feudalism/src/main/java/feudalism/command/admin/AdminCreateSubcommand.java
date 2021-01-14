@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
+import feudalism.Chat;
 import feudalism.FeudalismException;
 import feudalism.Util;
 import feudalism.command.SubcommandBase;
@@ -34,6 +35,6 @@ public class AdminCreateSubcommand extends SubcommandBase {
             coord = GridCoord.getFromGridPosition(0, 0);
         }
         Realm realm = new Realm(owner, name, coord);
-        System.out.println(realm);
+        Chat.sendMessage(sender, realm.getInfo());
     }
 }

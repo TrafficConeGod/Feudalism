@@ -249,7 +249,7 @@ public class Registry implements Printable, Readable {
         int bottomX = gridX + size;
         int topZ = gridZ - size;
         int bottomZ = gridZ + size;
-        for (int z = topZ; z < bottomZ; z++) {
+        for (int z = topZ; z <= bottomZ; z++) {
             for (int x = topX; x <= bottomX; x++) {
                 String val = "-";
                 GridCoord checkCoord = GridCoord.getFromGridPosition(x, z);

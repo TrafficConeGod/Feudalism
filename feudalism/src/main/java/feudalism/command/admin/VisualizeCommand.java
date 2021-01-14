@@ -22,6 +22,6 @@ public class VisualizeCommand extends SubcommandBase {
         int x = Integer.parseInt(args[0]);
         int z = Integer.parseInt(args[1]);
         int size = Integer.parseInt(args[2]);
-        Chat.sendMessage(sender, Registry.getInstance().getChunkVisualization(GridCoord.getFromGridPosition(x, z), size));
+        sender.sendMessage(Registry.getInstance().getChunkVisualization(GridCoord.getFromGridPosition(x, z), size));
     }
 }
