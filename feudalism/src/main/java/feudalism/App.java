@@ -44,7 +44,6 @@ public class App extends JavaPlugin {
         for (Realm realm : Registry.getInstance().getTopRealms()) {
             System.out.println(realm);
         }
-        System.out.println(Registry.getInstance().getChunkVisualization(GridCoord.getFromGridPosition(0, 0), 20));
     }
 
     private void initFilesystem() throws FeudalismException, FridgeException, IOException, PrintException {

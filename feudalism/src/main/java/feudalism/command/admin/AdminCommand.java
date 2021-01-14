@@ -8,7 +8,8 @@ public class AdminCommand extends CommandBase {
     protected SubcommandBase[] getSubcommands() {
         return new SubcommandBase[]{
             new ResetSubcommand(),
-            new AdminCreateSubcommand()
+            new AdminCreateSubcommand(),
+            new VisualizeCommand()
         };
     }
 }
