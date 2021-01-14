@@ -204,7 +204,6 @@ public class Registry implements Printable, Readable {
         throw new FeudalismException(String.format("No perm type with name %s", name));
     }
     
-    // TODO: Particularly inefficient function
     public boolean isInConflict(Realm realm1, Realm realm2) {
         for (Siege siege : getSieges()) {
             List<Realm> attackers = siege.getAttackers();
@@ -242,6 +241,34 @@ public class Registry implements Printable, Readable {
         return false;
     }
 
+    public String getChunkVisualization(GridCoord coord, int size) {
+        String output = "";
+        int gridX = coord.getGridX();
+        int gridZ = coord.getGridZ();
+        int topX = gridX - size;
+        int bottomX = gridX + size;
+        int topZ = gridZ - size;
+        int bottomZ = gridZ + size;
+        for (int z = topZ; z <= bottomZ; z++) {
+            for (int x = topX; x <= bottomX; x++) {
+                String val = "-";
+                GridCoord checkCoord = GridCoord.getFromGridPosition(x, z);
+                if (checkCoord == coord) {
+                    val = "O";
+                } else if (checkCoord.hasOwner()) {
+                    String name = checkCoord.getOwnerOrNull().getName();
+                    val = String.valueOf(name.charAt(0));
+                }
+                checkCoord.clean();
+                output += val;
+                if (x + 1 > bottomX) {
+                    output += "\n";
+                }
+            }
+        }
+        return output;
+    }
+
     public void save() {
         try {
             fridge.store(this);
@@ -277,6 +304,12 @@ public class Registry implements Printable, Readable {
         } catch (FeudalismException e) {
             throw new ReadException(e);
         }
+    }
+
+    // this is hacky code that has no reason to exist but i set up this structure in a dumbass way so here i am writing this
+    public void loadFrom(Registry oldRegistry) {
+        realms = oldRegistry.realms;
+        gridCoordCache = oldRegistry.gridCoordCache;
     }
 
 }

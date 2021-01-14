@@ -117,6 +117,12 @@ public class GridCoord implements Printable, Readable {
         return GridCoord.hasInGridPosition(x, z);
     }
 
+    public void clean() {
+        if (!hasOwner) {
+            destroy();
+        }
+    }
+
     public void destroy() {
         Registry.getInstance().removeGridCoord(this);
     }

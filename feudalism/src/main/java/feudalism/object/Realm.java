@@ -351,6 +351,7 @@ public class Realm implements Printable, Readable {
                     if (hasClaim(checkCoord)) {
                         return true;
                     }
+                    checkCoord.clean();
                 }
             }
         }

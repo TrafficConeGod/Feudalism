@@ -13,6 +13,7 @@ import ca.uqac.lif.azrael.json.JsonPrinter;
 import ca.uqac.lif.json.JsonElement;
 import feudalism.command.admin.AdminCommand;
 import feudalism.command.realm.RealmCommand;
+import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 
 public class App extends JavaPlugin {
@@ -43,6 +44,7 @@ public class App extends JavaPlugin {
         for (Realm realm : Registry.getInstance().getTopRealms()) {
             System.out.println(realm);
         }
+        System.out.println(Registry.getInstance().getChunkVisualization(GridCoord.getFromGridPosition(0, 0), 20));
     }
 
     private void initFilesystem() throws FeudalismException, FridgeException, IOException, PrintException {
@@ -71,6 +73,8 @@ public class App extends JavaPlugin {
         JsonFileFridge fridge = new JsonFileFridge("plugins/feudalism/fridge.json");
         Registry registry = (Registry) fridge.fetch();
         registry.setFridge(fridge);
+        Registry oldRegistry = Registry.getInstance();
+        registry.loadFrom(oldRegistry);
         Registry.setInstance(registry);
         Registry.getInstance().initWorld();
     }

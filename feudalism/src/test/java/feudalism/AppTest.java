@@ -34,12 +34,14 @@ public class AppTest {
         float upkeepFactor = Config.getFloat("realm.upkeep_factor");
         User user = new User();
         Realm r1 = new Realm();
+        r1.setName("First");
         r1.addClaim(GridCoord.getFromGridPosition(0, 0));
         r1.addClaim(GridCoord.getFromGridPosition(0, 1));
         r1.setOwner(user);
         Realm r2 = new Realm();
-        r1.addClaim(GridCoord.getFromGridPosition(1, 0));
-        r1.addClaim(GridCoord.getFromGridPosition(1, 1));
+        r2.setName("Second");
+        r2.addClaim(GridCoord.getFromGridPosition(1, 0));
+        r2.addClaim(GridCoord.getFromGridPosition(1, 1));
         r2.setOwner(user);
         r2.setOverlord(r1);
         assertEquals(true, r2.getOverlord() == r1);
@@ -69,9 +71,7 @@ public class AppTest {
     public void azraelRealmTest() throws PrintException, ReadException, FeudalismException {
         User user = User.get(UUID.randomUUID());
         User member = User.get(UUID.randomUUID());
-        Realm realm = new Realm();
-        realm.setName("Test");
-        realm.setOwner(user);
+        Realm realm = new Realm(user, "Test", GridCoord.getFromGridPosition(0, 10));
         realm.addMember(member);
         PermType blockPlace = Registry.getInstance().getPermType("block_place");
         assertEquals(true, realm.hasPerm(user, blockPlace));
