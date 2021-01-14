@@ -55,6 +55,10 @@ public class User implements Printable, Readable {
 		}
     }
 
+    public static User get(Player player) throws FeudalismException {
+        return get(player.getUniqueId());
+    }
+
     public UUID getUuid() {
         return uuid;
     }

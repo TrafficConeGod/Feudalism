@@ -23,6 +23,8 @@ import feudalism.object.User;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 
 public class Registry implements Printable, Readable {
     public Registry() {
@@ -167,7 +169,7 @@ public class Registry implements Printable, Readable {
     public World getWorld() {
         return world;
     }
-    
+
     public boolean hasSiegeGoal(String name) {
         for (SiegeGoal goal : siegeGoals) {
             if (goal.getName().equals(name)) {
@@ -176,7 +178,7 @@ public class Registry implements Printable, Readable {
         }
         return false;
     }
-    
+
     public SiegeGoal getSiegeGoal(String name) throws FeudalismException {
         for (SiegeGoal goal : siegeGoals) {
             if (goal.getName().equals(name)) {
@@ -185,7 +187,7 @@ public class Registry implements Printable, Readable {
         }
         throw new FeudalismException(String.format("No siege goal type with name %s", name));
     }
-    
+
     public boolean hasPermType(String name) {
         for (PermType type : permTypes) {
             if (type.getName().equals(name)) {
@@ -194,7 +196,7 @@ public class Registry implements Printable, Readable {
         }
         return false;
     }
-    
+
     public PermType getPermType(String name) throws FeudalismException {
         for (PermType type : permTypes) {
             if (type.getName().equals(name)) {
@@ -203,17 +205,18 @@ public class Registry implements Printable, Readable {
         }
         throw new FeudalismException(String.format("No perm type with name %s", name));
     }
-    
+
     public boolean isInConflict(Realm realm1, Realm realm2) {
         for (Siege siege : getSieges()) {
             List<Realm> attackers = siege.getAttackers();
             List<Realm> defenders = siege.getDefenders();
-            if ((attackers.contains(realm1) && defenders.contains(realm2)) || (attackers.contains(realm1) && defenders.contains(realm2))) {
+            if ((attackers.contains(realm1) && defenders.contains(realm2))
+                    || (attackers.contains(realm1) && defenders.contains(realm2))) {
                 return true;
             }
         }
         return false;
-    }  
+    }
 
     public void addUser(User user) {
         users.add(user);
@@ -267,6 +270,37 @@ public class Registry implements Printable, Readable {
             }
         }
         return output;
+    }
+
+    private PermType getPermTypeWithEvent(String eventType) throws FeudalismException {
+        for (PermType type : permTypes) {
+            if (type.hasEvent(eventType)) {
+                return type;
+            }
+        }
+        throw new FeudalismException(String.format("No perm type with event %s", eventType));
+    }
+
+    public boolean getEventStatus(String eventType, Player player, GridCoord coord) {
+        try {
+            // if (player.isOp()) {
+            //     return true;
+            // }
+            if (!coord.hasOwner()) {
+                coord.clean();
+                return false;
+            }
+            PermType type = getPermTypeWithEvent(eventType);
+            User user = User.get(player);
+            boolean status = !user.hasPerm(coord.getOwner(), type);
+            if (status) {
+                Chat.sendErrorMessage(player, String.format("You can't %s here!", type.getDisplayName()));
+            }
+            return status;
+        } catch (FeudalismException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void save() {

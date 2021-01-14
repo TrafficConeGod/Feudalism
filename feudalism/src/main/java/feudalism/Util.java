@@ -20,6 +20,9 @@ public class Util {
     
     public static boolean isValidPlayerUuid(UUID uuid) {
         if (!isJUnitTest()) {
+            if (Bukkit.getPlayer(uuid) != null) {
+                return true;
+            }
             OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
             return player.hasPlayedBefore();
         }
