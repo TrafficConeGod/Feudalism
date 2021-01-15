@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class Util {
     public static UUID getPlayerUuidByName(String name) throws FeudalismException {
@@ -36,9 +38,36 @@ public class Util {
             }           
         }
         return false;
-    }    
+    }
 
     public static String repeatString(String str, int count) {
         return new String(new char[count]).replace("\0", str);
     }
+
+    public static String[] trimArgs(String[] args, int amount) {
+        String[] trimmed = new String[args.length - amount];
+        for (int i = amount; i < args.length; i++) {
+            trimmed[i - amount] = args[i];
+        }
+        return trimmed;
+    }
+
+    public static void checkPlayer(CommandSender sender) throws FeudalismException {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            if (!player.isOnline()) {
+                throw new FeudalismException("Sender must be an online player");
+            }
+        } else {
+            throw new FeudalismException("Sender must be an online player");
+        }
+    }
+
+    public static int intFromString(String str) throws FeudalismException {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            throw new FeudalismException(String.format("%s is not a valid number", str));
+        }
+    } 
 }
