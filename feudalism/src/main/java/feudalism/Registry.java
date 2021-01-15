@@ -20,11 +20,13 @@ import feudalism.object.Realm;
 import feudalism.object.Siege;
 import feudalism.object.SiegeGoal;
 import feudalism.object.User;
+import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class Registry implements Printable, Readable {
     public Registry() {
@@ -72,6 +74,7 @@ public class Registry implements Printable, Readable {
     private List<SiegeGoal> siegeGoals = new ArrayList<>();
     private List<PermType> permTypes = new ArrayList<>();
     private World world;
+    private Economy economy;
 
     public void setFridge(JsonFileFridge fridge) {
         this.fridge = fridge;
@@ -87,6 +90,17 @@ public class Registry implements Printable, Readable {
         if (world == null) {
             throw new FeudalismException(String.format("World %s does not exist", worldName));
         }
+    }
+
+    public void initEconomy() throws FeudalismException {
+        if (App.getPlugin().getServer().getPluginManager().getPlugin("Vault") == null) {
+            throw new FeudalismException("Vault plugin is not installed");
+        }
+        RegisteredServiceProvider<Economy> rsp = App.getPlugin().getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            throw new FeudalismException("Error while setting up economy service");
+        }
+        economy = rsp.getProvider();
     }
 
     public void addTopRealm(Realm realm) throws FeudalismException {
@@ -168,6 +182,10 @@ public class Registry implements Printable, Readable {
 
     public World getWorld() {
         return world;
+    }
+
+    public Economy getEconomy() {
+        return economy;
     }
 
     public boolean hasSiegeGoal(String name) {

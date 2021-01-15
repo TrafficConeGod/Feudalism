@@ -20,8 +20,15 @@ import feudalism.object.Realm;
 public class App extends JavaPlugin {
     private boolean isError = false;
 
+    private static JavaPlugin plugin;
+
+    public static JavaPlugin getPlugin() {
+        return plugin;
+    }
+
     @Override
     public void onEnable() {
+        plugin = this;
         try {
             initFilesystem();
         } catch (FeudalismException e) {
@@ -78,6 +85,7 @@ public class App extends JavaPlugin {
         registry.loadFrom(oldRegistry);
         Registry.setInstance(registry);
         Registry.getInstance().initWorld();
+        Registry.getInstance().initEconomy();
     }
 
     private void initCommands() {

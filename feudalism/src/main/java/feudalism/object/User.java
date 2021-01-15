@@ -112,7 +112,7 @@ public class User implements Printable, Readable {
 
     public float getUpkeep() {
         int claims = getClaims();
-        return (claims * claims) * Config.getFloat("realm.upkeep_factor");
+        return (claims * claims) * getUpkeepFactor();
     }
     
     public boolean hasPerm(Realm realm, PermType type) {
