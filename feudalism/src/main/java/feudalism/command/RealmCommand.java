@@ -38,6 +38,7 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
     @Override
     public CommandElement[] getSubelements() {
         return new CommandElement[] {
+            new This(),
             new As(),
             new Create(),
             new Claim()
@@ -176,14 +177,14 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             Player player = (Player) sender;
             User user = User.get(player);
             for (Realm realm : user.getOwnedRealms()) {
-                if (realm.getName().equals(realmName)) {
+                if (realm.getName().equals(realmName) && realm.hasOwner() && realm.getOwner() == user) {
                     data.add(realm);
                     CommandElement element = getSubelementWithAlias(args[1]);
                     element.execute(sender, alias, Util.trimArgs(args, 2), data);
                     return;
                 }
             }
-            throw new FeudalismException(String.format("No realm with name %s", realmName));
+            throw new FeudalismException(String.format("You do not own a realm with name %s", realmName));
         }
     
         @Override
@@ -197,6 +198,53 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
                 }
                 return names;
             } else if (args.length == 2) {
+                return getSubaliases();
+            }
+            CommandElement element = getSubelementWithAlias(args[0]);
+            return element.getTabComplete(sender, alias, Util.trimArgs(args, 1), data);
+        }
+        
+    }
+
+    private class This implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "this" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 1;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[] {
+                new SelectCommands.Abandon()
+            };
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            Player player = (Player) sender;
+            User user = User.get(player);
+            GridCoord coord = GridCoord.getFromLocation(player.getLocation());
+            if (!coord.hasOwner()) {
+                throw new FeudalismException("No realm owns the coord you are standing in");
+            }
+            Realm realm = coord.getOwner();
+            if (!realm.hasOwner() || realm.getOwner() != user) {
+                throw new FeudalismException("You do not own this realm");
+            }
+            data.add(realm);
+            CommandElement element = getSubelementWithAlias(args[0]);
+            element.execute(sender, alias, Util.trimArgs(args, 1), data);
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            if (args.length == 1) {
                 return getSubaliases();
             }
             CommandElement element = getSubelementWithAlias(args[0]);

@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import feudalism.Chat;
 import feudalism.FeudalismException;
@@ -43,7 +44,8 @@ public class AdminCommand implements CommandElement, CommandExecutor, TabComplet
         return new CommandElement[] {
             new Create(),
             new Reset(),
-            new Visualize()
+            new Visualize(),
+            new Teleport()
         };
     }
 
@@ -160,6 +162,47 @@ public class AdminCommand implements CommandElement, CommandExecutor, TabComplet
     
         @Override
         public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            return new ArrayList<>();
+        }
+        
+    }
+
+    private class Teleport implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "teleport", "tp" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 1;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[0];
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            Util.checkPlayer(sender);
+            Player player = (Player) sender;
+            Realm realm = Registry.getInstance().getRealmByName(args[0]);
+            for (GridCoord coord : realm.getClaims()) {
+                player.teleport(coord.getLocation());
+            }
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            if (args.length == 1) {
+                List<String> names = new ArrayList<>();
+                for (Realm realm : Registry.getInstance().getRealms()) {
+                    names.add(realm.getName());
+                }
+                return names;
+            }
             return new ArrayList<>();
         }
         
