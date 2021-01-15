@@ -4,6 +4,14 @@ version: 0.1
 api-version: 1.16
 depend: [Vault]
 commands:
+  confirm:
+    description: Confirm
+    usage: /<command>
+    permission: feudalism.confirmation
+  cancel:
+    description: Cancel
+    usage: /<command>
+    permission: feudalism.confirmation
   realm:
     description: Realm command
     usage: /<command>
@@ -14,6 +22,9 @@ commands:
     permission: feudalism.admin 
 
 permissions:
+  feudalism.confirmation:
+    description: Confirmation
+    default: true
   feudalism.realm:
     description: Realm
     default: true

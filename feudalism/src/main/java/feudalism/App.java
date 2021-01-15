@@ -12,6 +12,8 @@ import ca.uqac.lif.azrael.json.JsonFileFridge;
 import ca.uqac.lif.azrael.json.JsonPrinter;
 import ca.uqac.lif.json.JsonElement;
 import feudalism.command.AdminCommand;
+import feudalism.command.CancelCommand;
+import feudalism.command.ConfirmCommand;
 import feudalism.command.RealmCommand;
 import feudalism.listener.BlockListener;
 import feudalism.object.GridCoord;
@@ -91,6 +93,8 @@ public class App extends JavaPlugin {
     private void initCommands() {
         this.getCommand("admin").setExecutor(new AdminCommand());
         this.getCommand("realm").setExecutor(new RealmCommand());
+        this.getCommand("confirm").setExecutor(new ConfirmCommand());
+        this.getCommand("cancel").setExecutor(new CancelCommand());
     }
 
     private void initListeners() {

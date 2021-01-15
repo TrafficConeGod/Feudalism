@@ -14,6 +14,7 @@ import ca.uqac.lif.azrael.ReadException;
 import ca.uqac.lif.azrael.Readable;
 import ca.uqac.lif.azrael.fridge.FridgeException;
 import ca.uqac.lif.azrael.json.JsonFileFridge;
+import feudalism.object.Confirmation;
 import feudalism.object.GridCoord;
 import feudalism.object.PermType;
 import feudalism.object.Realm;
@@ -24,6 +25,7 @@ import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -78,6 +80,7 @@ public class Registry implements Printable, Readable {
     private Map<Integer, Map<Integer, GridCoord>> gridCoordCache = new HashMap<>();
     private List<SiegeGoal> siegeGoals = new ArrayList<>();
     private List<PermType> permTypes = new ArrayList<>();
+    private List<Confirmation> confirmations = new ArrayList<>();
     private World world;
     private Economy economy;
 
@@ -341,6 +344,33 @@ public class Registry implements Printable, Readable {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void addOrReplaceConfirmation(Confirmation confirmation) {
+        for (Confirmation check : confirmations) {
+            if (check.getSender() == confirmation.getSender()) {
+                confirmations.remove(check);
+                break;
+            }
+        }
+        confirmations.add(confirmation);
+    }
+
+    public void removeConfirmation(Confirmation confirmation) {
+        confirmations.remove(confirmation);
+    }
+
+    public Confirmation getConfirmation(CommandSender sender) throws FeudalismException {
+        for (Confirmation confirmation : confirmations) {
+            if (confirmation.getSender() == sender) {
+                return confirmation;
+            }
+        }
+        throw new FeudalismException(String.format("You have nothing to confirm or cancel"));
+    }
+
+    public List<Confirmation> getConfirmations() {
+        return confirmations;
     }
 
     public void save() {

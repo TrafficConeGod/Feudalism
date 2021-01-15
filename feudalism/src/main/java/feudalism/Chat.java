@@ -3,7 +3,7 @@ package feudalism;
 import org.bukkit.command.CommandSender;
 
 public class Chat {
-    private static String insertColorCode(String msg) {
+    public static String insertColorCode(String msg) {
         return msg.replaceAll("&", "\u00a7");
     }
 

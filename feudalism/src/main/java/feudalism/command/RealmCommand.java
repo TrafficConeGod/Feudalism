@@ -14,6 +14,7 @@ import feudalism.Config;
 import feudalism.FeudalismException;
 import feudalism.Registry;
 import feudalism.Util;
+import feudalism.object.Confirmation;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 import feudalism.object.User;
@@ -93,12 +94,19 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             if (!user.hasMoney(createPrice)) {
                 throw new FeudalismException(String.format("You need at least %s in your account to make a realm", createPrice));
             }
-            user.removeMoney(createPrice);
-            String name = args[0];
             GridCoord coord = GridCoord.getFromWorldPosition((int) player.getLocation().getX(), (int) player.getLocation().getZ());
-            Realm realm = new Realm(User.get(player), name, coord);
-            GridCoord claim = realm.getClaims().get(0);
-            Chat.sendMessage(player, String.format("Created realm with name %s at: %s, %s", realm.getName(), claim.getWorldX(), claim.getWorldZ()));
+            if (coord.hasOwner()) {
+                throw new FeudalismException(String.format("%s, %s is already owned by another realm", coord.getWorldX(), coord.getWorldZ()));
+            }
+            
+            Chat.sendMessage(sender, String.format("Are you sure you want to create a realm called %s? This will cost %s.", args[0], createPrice));
+            new Confirmation(sender, () -> {
+                String name = args[0];
+                Realm realm = new Realm(User.get(player), name, coord);
+                user.removeMoney(createPrice);
+                GridCoord claim = realm.getClaims().get(0);
+                Chat.sendMessage(player, String.format("Created realm with name %s at: %s, %s", realm.getName(), claim.getWorldX(), claim.getWorldZ()));
+            });
         }
 
         @Override
