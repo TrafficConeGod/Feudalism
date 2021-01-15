@@ -14,6 +14,7 @@ import ca.uqac.lif.azrael.ObjectReader;
 import ca.uqac.lif.azrael.PrintException;
 import ca.uqac.lif.azrael.Printable;
 import ca.uqac.lif.azrael.Readable;
+import feudalism.App;
 import feudalism.Config;
 import feudalism.FeudalismException;
 import feudalism.Registry;
@@ -43,7 +44,11 @@ public class Realm implements Printable, Readable {
     private Perms subjectPerms = new Perms();
     private Perms overlordPerms = new Perms();
 
-    public Realm() throws FeudalismException {
+    public Realm() {
+        System.out.println("[Azrael] Realm init");
+    }
+
+    public Realm(boolean myCodeIsBad) throws FeudalismException {
         uuid = UUID.randomUUID();
         Registry.getInstance().addRealm(this);
         Registry.getInstance().addTopRealm(this);
@@ -417,7 +422,7 @@ public class Realm implements Printable, Readable {
     }
 
     public boolean hasPerm(User user, PermType type) {
-        if (user.ownsRealm(this)) {
+        if (!hasOwner || user.ownsRealm(this)) {
             return true;
         }
         Perms perms = getPerms(user);

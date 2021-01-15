@@ -149,7 +149,16 @@ public class Registry implements Printable, Readable {
                 return realm;
             }
         }
-        throw new FeudalismException("No realm with uuid %s");
+        throw new FeudalismException(String.format("No realm with uuid %s", uuid.toString()));
+    }
+
+    public Realm getRealmByName(String name) throws FeudalismException {
+        for (Realm realm : getRealms()) {
+            if (realm.getName().equals(name)) {
+                return realm;
+            }
+        }
+        throw new FeudalismException(String.format("No realm with name %s", name));
     }
 
     public void addRealm(Realm realm) {

@@ -32,12 +32,12 @@ public class AppTest {
     @Test
     public void realmsTest() throws FeudalismException {
         User user = new User();
-        Realm r1 = new Realm();
+        Realm r1 = new Realm(true);
         r1.setName("First");
         r1.addClaim(GridCoord.getFromGridPosition(0, 0));
         r1.addClaim(GridCoord.getFromGridPosition(0, 1));
         r1.setOwner(user);
-        Realm r2 = new Realm();
+        Realm r2 = new Realm(true);
         r2.setName("Second");
         r2.addClaim(GridCoord.getFromGridPosition(1, 0));
         r2.addClaim(GridCoord.getFromGridPosition(1, 1));
@@ -55,9 +55,9 @@ public class AppTest {
 
     @Test
     public void descendantSubjectsTest() throws FeudalismException {
-        Realm tr = new Realm();
-        Realm mr = new Realm();
-        Realm br = new Realm();
+        Realm tr = new Realm(true);
+        Realm mr = new Realm(true);
+        Realm br = new Realm(true);
         br.setOverlord(mr);
         mr.setOverlord(tr);
         assertEquals(true, tr.getDescendantSubjects().size() == 2);
@@ -77,7 +77,7 @@ public class AppTest {
         assertEquals(false, realm.hasPerm(member, blockPlace));
         realm.getMemberPerms().set(blockPlace, true);
         assertEquals(true, realm.hasPerm(member, blockPlace));
-        Realm r2 = new Realm();
+        Realm r2 = new Realm(true);
         r2.setName("Test2");
         r2.setOverlord(realm);
         JsonPrinter printer = new JsonPrinter();
@@ -131,7 +131,7 @@ public class AppTest {
 
     @Test
     public void gridCoordTest() throws FeudalismException {
-        Realm realm = new Realm();
+        Realm realm = new Realm(true);
         realm.addClaim(GridCoord.getFromWorldPosition(0, 0));
         realm.addClaim(GridCoord.getFromWorldPosition(0, 1));
         realm.addClaim(GridCoord.getFromWorldPosition(1, 1));
@@ -150,14 +150,14 @@ public class AppTest {
         User user1 = new User();
         Realm r1 = new Realm(user1, "Realm1");
         Realm subject1 = new Realm(user1, "Subject/PU1", r1);
-        Realm r2 = new Realm();
+        Realm r2 = new Realm(true);
         r2.setName("Realm2");
-        Realm subject2 = new Realm();
+        Realm subject2 = new Realm(true);
         subject2.setName("Subject2");
         subject2.setOverlord(r2);
-        Realm ally1 = new Realm();
+        Realm ally1 = new Realm(true);
         ally1.setName("Ally1");
-        Realm ally2 = new Realm();
+        Realm ally2 = new Realm(true);
         ally2.setName("Ally2");
         Siege siege = new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
         siege.addAlly(r1, ally1);
@@ -190,8 +190,8 @@ public class AppTest {
     public void siegeGoalTest() throws FeudalismException {
         assertEquals(true, Registry.getInstance().hasSiegeGoal("subjugate"));
         SiegeGoal goal = Registry.getInstance().getSiegeGoal("subjugate");
-        Realm r1 = new Realm();
-        Realm r2 = new Realm();
+        Realm r1 = new Realm(true);
+        Realm r2 = new Realm(true);
         goal.execute(r1, r2, new ArrayList<>());
         assertEquals(true, r2.getOverlord() == r1);
         Registry.resetInstance();
@@ -200,11 +200,11 @@ public class AppTest {
     @Test
     public void siegeSerializationTest() throws FeudalismException, ReadException, PrintException {
         assertEquals(true, Registry.getInstance().hasSiegeGoal("subjugate"));
-        Realm r1 = new Realm();
+        Realm r1 = new Realm(true);
         r1.setName("R1");
-        Realm r2 = new Realm();
+        Realm r2 = new Realm(true);
         r2.setName("R2");
-        Realm ally = new Realm();
+        Realm ally = new Realm(true);
         Siege siege = new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
         siege.addAlly(r1, ally);
         JsonPrinter printer = new JsonPrinter();
@@ -221,7 +221,7 @@ public class AppTest {
 
     @Test
     public void directBorderTest() throws FeudalismException {
-        Realm realm = new Realm();
+        Realm realm = new Realm(true);
         realm.addClaim(GridCoord.getFromGridPosition(1, 0));
         GridCoord coord = GridCoord.getFromGridPosition(2, 0);
         GridCoord coordNot = GridCoord.getFromGridPosition(3, 0);
@@ -232,7 +232,7 @@ public class AppTest {
 
     @Test
     public void borderRadiusTest() throws FeudalismException {
-        Realm realm = new Realm();
+        Realm realm = new Realm(true);
         realm.addClaim(GridCoord.getFromGridPosition(1, 0));
         GridCoord coord = GridCoord.getFromGridPosition(5, 0);
         GridCoord coordNot = GridCoord.getFromGridPosition(12, 0);
@@ -244,9 +244,9 @@ public class AppTest {
     @Test
     public void siegeBorderRadiusTest() throws FeudalismException {
         assertEquals(true, Registry.getInstance().hasSiegeGoal("subjugate"));
-        Realm r1 = new Realm();
+        Realm r1 = new Realm(true);
         r1.addClaim(GridCoord.getFromGridPosition(0, 0));
-        Realm r2 = new Realm();
+        Realm r2 = new Realm(true);
         r2.addClaim(GridCoord.getFromGridPosition(50, 10));
         try {
             new Siege(r1, r2, Registry.getInstance().getSiegeGoal("subjugate"));
@@ -281,7 +281,7 @@ public class AppTest {
 
     // @Test
     // public void azraelFridgeTest() throws FridgeException {
-    //     Realm realm = new Realm();
+    //     Realm realm = new Realm(true);
     //     realm.setName("Test");
     //     JsonFileFridge fridge = new JsonFileFridge("fridge_test.json");
     //     fridge.store(realm);

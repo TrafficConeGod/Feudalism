@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import feudalism.Chat;
 import feudalism.Config;
 import feudalism.FeudalismException;
+import feudalism.Registry;
 import feudalism.Util;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
@@ -37,7 +38,9 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
     @Override
     public CommandElement[] getSubelements() {
         return new CommandElement[] {
-            new Create()
+            new As(),
+            new Create(),
+            new Claim()
         };
     }
     
@@ -55,7 +58,7 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
-        if (args.length <= 1) {
+        if (args.length == 1) {
             return getSubaliases();
         }
         CommandElement element = getSubelementWithAlias(args[0]);
@@ -101,6 +104,105 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
         public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
             return new ArrayList<>();
         }
+    }
+
+    private class Claim implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "claim" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 0;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[0];
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            Player player = (Player) sender;
+            User user = User.get(player);
+            Realm realm = Registry.getInstance().getRealmByName(args[0]);
+            if (realm.hasOwner()) {
+                throw new FeudalismException("Realm already has owner");
+            }
+            realm.setOwner(user);
+            Chat.sendMessage(sender, String.format("Claimed realm %s", realm.getName()));
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            if (args.length != 1) {
+                return new ArrayList<>();
+            }
+            List<String> names = new ArrayList<>();
+            for (Realm realm : Registry.getInstance().getRealms()) {
+                if (!realm.hasOwner()) {
+                    names.add(realm.getName());
+                }
+            }
+            return names;
+        }
+        
+    }
+
+    private class As implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "as" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 2;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[] {
+                new SelectCommands.Abandon()
+            };
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            String realmName = args[0];
+            Player player = (Player) sender;
+            User user = User.get(player);
+            for (Realm realm : user.getOwnedRealms()) {
+                if (realm.getName().equals(realmName)) {
+                    data.add(realm);
+                    CommandElement element = getSubelementWithAlias(args[1]);
+                    element.execute(sender, alias, Util.trimArgs(args, 2), data);
+                    return;
+                }
+            }
+            throw new FeudalismException(String.format("No realm with name %s", realmName));
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            if (args.length == 1) {
+                List<String> names = new ArrayList<>();
+                Player player = (Player) sender;
+                User user = User.get(player);
+                for (Realm realm : user.getOwnedRealms()) {
+                    names.add(realm.getName());
+                }
+                return names;
+            } else if (args.length == 2) {
+                return getSubaliases();
+            }
+            CommandElement element = getSubelementWithAlias(args[0]);
+            return element.getTabComplete(sender, alias, Util.trimArgs(args, 1), data);
+        }
+        
     }
 
 }
