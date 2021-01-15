@@ -31,7 +31,6 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 public class AppTest {
     @Test
     public void realmsTest() throws FeudalismException {
-        float upkeepFactor = Config.getFloat("realm.upkeep_factor");
         User user = new User();
         Realm r1 = new Realm();
         r1.setName("First");
@@ -50,7 +49,7 @@ public class AppTest {
         assertEquals(false, r2.hasOverlord());
         assertEquals(false, r1.getSubjects().size() > 0);
         assertEquals(true, user.getOwnedRealms().size() == 2);
-        assertEquals(true, user.getUpkeep() == upkeepFactor * 4);
+        assertEquals(true, user.getUpkeep() > 0.79 && user.getUpkeep() < 0.81);
         Registry.resetInstance();
     }
 

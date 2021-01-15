@@ -29,7 +29,7 @@ public class Config {
                 Map<String, Object> map = new HashMap<>();
                 map.put("world", "world");
                 map.put("border_radius", 10);
-                map.put("upkeep_factor", 10);
+                map.put("upkeep_factor", 0.05);
                 // realm.perms config
                 {
                     List<Object> list = new ArrayList<>();
