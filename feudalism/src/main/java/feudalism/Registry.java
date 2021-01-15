@@ -56,8 +56,13 @@ public class Registry implements Printable, Readable {
 
     public static void resetInstance() throws FeudalismException {
         JsonFileFridge fridge = getInstance().getFridge();
+        Registry oldRegistry = Registry.getInstance();
+        World world = oldRegistry.getWorld();
+        Economy economy = oldRegistry.getEconomy();
         Registry registry = new Registry();
         registry.setFridge(fridge);
+        registry.setWorld(world);
+        registry.setEconomy(economy);
         Registry.setInstance(registry);
         if (!Util.isJUnitTest()) {
             Registry.getInstance().initWorld();
@@ -82,6 +87,14 @@ public class Registry implements Printable, Readable {
 
     public JsonFileFridge getFridge() {
         return fridge;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public void setEconomy(Economy economy) {
+        this.economy = economy;
     }
 
     public void initWorld() throws FeudalismException {

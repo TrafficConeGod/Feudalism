@@ -19,10 +19,12 @@ public class AdminCreateSubcommand extends SubcommandBase {
     }
 
     @Override
+    protected int getArgLength() {
+        return 2;
+    }
+
+    @Override
     public void onExecute(CommandSender sender, String[] args) throws FeudalismException {
-        if (args.length < 2) {
-            throw new FeudalismException("Too few arguments");
-        }
         String name = args[0];
         String ownerName = args[1];
         User owner = User.get(Util.getPlayerUuidByName(ownerName));

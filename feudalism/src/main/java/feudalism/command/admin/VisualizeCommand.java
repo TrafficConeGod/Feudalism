@@ -15,10 +15,12 @@ public class VisualizeCommand extends SubcommandBase {
     }
 
     @Override
+    protected int getArgLength() {
+        return 3;
+    }
+
+    @Override
     public void onExecute(CommandSender sender, String[] args) throws FeudalismException {
-        if (args.length < 3) {
-            throw new FeudalismException("Too few arguments");
-        }
         int x = Integer.parseInt(args[0]);
         int z = Integer.parseInt(args[1]);
         int size = Integer.parseInt(args[2]);

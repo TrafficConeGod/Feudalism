@@ -71,6 +71,19 @@ public class User implements Printable, Readable {
         return Bukkit.getOfflinePlayer(uuid);
     }
 
+    public void transferMoney(User to, float amount) {
+        Registry.getInstance().getEconomy().withdrawPlayer(getOfflinePlayer(), amount);
+        Registry.getInstance().getEconomy().depositPlayer(getOfflinePlayer(), amount);
+    }
+
+    public void removeMoney(float amount) {
+        Registry.getInstance().getEconomy().withdrawPlayer(getOfflinePlayer(), amount);
+    }
+
+    public boolean hasMoney(float amount) {
+        return Registry.getInstance().getEconomy().has(getOfflinePlayer(), amount);
+    }
+
     @Override
     public String toString() {
         return uuid.toString();

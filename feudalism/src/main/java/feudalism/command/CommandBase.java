@@ -35,25 +35,16 @@ public class CommandBase implements CommandExecutor, TabCompleter {
         throw new FeudalismException(String.format("No subcommand by alias: %s", alias));
     }
 
-    private String[] getSubcommandArgs(String[] args) {
-        String[] subcommandArgs = new String[args.length - 1];
-        for (int i = 1; i < args.length; i++) {
-            subcommandArgs[i - 1] = args[i];
-        }
-        return subcommandArgs;
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1) {
-            Chat.sendErrorMessage(sender, "Not enough arguments for command");
+            Chat.sendErrorMessage(sender, "Not enough arguments for this command");
             return true;
         }
         String alias = args[0];
         try {
             SubcommandBase subcommand = getSubcommandByAlias(alias);
-            String[] subcommandArgs = getSubcommandArgs(args);
-            subcommand.onExecute(sender, subcommandArgs);
+            subcommand.execute(sender, args);
             return true;
         } catch (FeudalismException e) {
             Chat.sendErrorMessage(sender, e.getMessage());
@@ -69,8 +60,7 @@ public class CommandBase implements CommandExecutor, TabCompleter {
             String alias = args[0];
             try {
                 SubcommandBase subcommand = getSubcommandByAlias(alias);
-                String[] subcommandArgs = getSubcommandArgs(args);
-                return subcommand.onTabComplete(sender, subcommandArgs);
+                return subcommand.getTabComplete(sender, args);
             } catch (Exception e) {
                 return new ArrayList<>();
             }
