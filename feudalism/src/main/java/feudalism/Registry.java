@@ -97,7 +97,7 @@ public class Registry implements Printable, Readable {
             throw new FeudalismException("Vault plugin is not installed");
         }
         RegisteredServiceProvider<Economy> rsp = App.getPlugin().getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
+        if (rsp == null || rsp.getProvider() == null) {
             throw new FeudalismException("Error while setting up economy service");
         }
         economy = rsp.getProvider();

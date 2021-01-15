@@ -2,6 +2,7 @@ main: feudalism.App
 name: Feudalism
 version: 0.1
 api-version: 1.16
+depend: [Vault]
 commands:
   realm:
     description: Realm command
