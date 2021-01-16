@@ -140,8 +140,11 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             if (realm.hasOwner()) {
                 throw new FeudalismException("Realm already has owner");
             }
-            realm.setOwner(user);
-            Chat.sendMessage(sender, String.format("Claimed realm %s", realm.getName()));
+            Chat.sendMessage(sender, String.format("Are you sure you want to claim %s? You will have to pay upkeep on the land this realm owns.", realm.getName()));
+            new Confirmation(player, () -> {
+                realm.setOwner(user);
+                Chat.sendMessage(sender, String.format("Claimed realm %s", realm.getName()));
+            });
         }
     
         @Override
