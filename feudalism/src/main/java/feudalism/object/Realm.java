@@ -337,6 +337,15 @@ public class Realm implements Printable, Readable {
         return false;
     }
 
+    public boolean hasDirectBorder(Realm realm) {
+        for (GridCoord coord : realm.getClaims()) {
+            if (hasDirectBorder(coord)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private int getBorderRadius() {
         return Config.getInt("realm.border_radius");
     }

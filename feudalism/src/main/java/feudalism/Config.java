@@ -31,6 +31,8 @@ public class Config {
                 map.put("border_radius", 10);
                 map.put("upkeep_factor", 0.05);
                 map.put("create_price", 200);
+                map.put("claim_price", 10);
+                map.put("personal_union_form_price", 200);
                 // realm.perms config
                 {
                     List<Object> list = new ArrayList<>();

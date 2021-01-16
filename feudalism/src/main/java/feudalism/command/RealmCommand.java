@@ -140,8 +140,13 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             if (realm.hasOwner()) {
                 throw new FeudalismException("Realm already has owner");
             }
-            Chat.sendMessage(sender, String.format("Are you sure you want to claim %s? You will have to pay upkeep on the land this realm owns.", realm.getName()));
+            float personalUnionFormPrice = Config.getFloat("realm.personal_union_form_price");
+            if (!user.hasMoney(personalUnionFormPrice)) {
+                throw new FeudalismException(String.format("You need at least %s in your account to form a personal union", personalUnionFormPrice));
+            }
+            Chat.sendMessage(sender, String.format("Are you sure you want to claim %s? You will have to pay upkeep on the land this realm owns. This action will cost %s", realm.getName(), personalUnionFormPrice));
             new Confirmation(player, () -> {
+                user.removeMoney(personalUnionFormPrice);
                 realm.setOwner(user);
                 Chat.sendMessage(sender, String.format("Claimed realm %s", realm.getName()));
             });
