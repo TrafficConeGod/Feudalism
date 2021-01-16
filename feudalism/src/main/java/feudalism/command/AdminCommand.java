@@ -13,6 +13,7 @@ import feudalism.Chat;
 import feudalism.FeudalismException;
 import feudalism.Registry;
 import feudalism.Util;
+import feudalism.object.Confirmation;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 import feudalism.object.User;
@@ -51,9 +52,11 @@ public class AdminCommand implements CommandElement, CommandExecutor, TabComplet
 
     @Override
     public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
-        Util.checkPlayer(sender);
-        CommandElement element = getSubelementWithAlias(args[0]);
-        element.execute(sender, alias, Util.trimArgs(args, 1), data);
+        Chat.sendMessage(sender, "You are about to perform an admin action. Do you wish to continue?");
+        new Confirmation(sender, () -> {
+            CommandElement element = getSubelementWithAlias(args[0]);
+            element.execute(sender, alias, Util.trimArgs(args, 1), data);
+        });
     }
 
     @Override
