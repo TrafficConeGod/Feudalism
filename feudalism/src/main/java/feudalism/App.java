@@ -16,6 +16,7 @@ import feudalism.command.CancelCommand;
 import feudalism.command.ConfirmCommand;
 import feudalism.command.RealmCommand;
 import feudalism.listener.BlockListener;
+import feudalism.listener.PlayerListener;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
 
@@ -99,6 +100,7 @@ public class App extends JavaPlugin {
 
     private void initListeners() {
         getServer().getPluginManager().registerEvents(new BlockListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
     }
 
     @Override
