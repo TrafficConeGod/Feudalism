@@ -214,8 +214,8 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             } else if (args.length == 2) {
                 return getSubaliases();
             }
-            CommandElement element = getSubelementWithAlias(args[0]);
-            return element.getTabComplete(sender, alias, Util.trimArgs(args, 1), data);
+            CommandElement element = getSubelementWithAlias(args[1]);
+            return element.getTabComplete(sender, alias, Util.trimArgs(args, 2), data);
         }
         
     }

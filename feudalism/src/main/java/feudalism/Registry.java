@@ -27,7 +27,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class Registry implements Printable, Readable {

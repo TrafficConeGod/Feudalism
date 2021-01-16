@@ -102,10 +102,10 @@ public class Realm implements Printable, Readable {
     }
 
     public void removeOwner() {
-        hasOwner = false;
-        if (owner.ownsRealm(this)) {
-            owner.removeRealm(this);
+        if (hasOwner) {
+            owner.realmOnlyRemoveRealm(this);
         }
+        hasOwner = false;
     }
 
     public User getOwner() throws FeudalismException {
@@ -119,11 +119,12 @@ public class Realm implements Printable, Readable {
         if (hasMember(owner)) {
             throw new FeudalismException("Can not set overlord to a member of the realm");
         }
+        if (hasOwner) {
+            this.owner.realmOnlyRemoveRealm(this);
+        }
         hasOwner = true;
         this.owner = owner;
-        if (!owner.ownsRealm(this)) {
-            owner.addRealm(this);
-        }
+        owner.realmOnlyAddRealm(this);
     }
 
     public boolean hasOverlord() {

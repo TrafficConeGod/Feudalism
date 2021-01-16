@@ -97,22 +97,12 @@ public class User implements Printable, Readable {
         return ownedRealms.contains(realm);
     }
 
-    public void addRealm(Realm realm) {
+    public void realmOnlyAddRealm(Realm realm) {
         ownedRealms.add(realm);
-        try {
-            if (!realm.hasOwner() || realm.getOwner() != this) {
-                realm.setOwner(this);
-            }
-        } catch (FeudalismException e) {
-            
-        }
     }
 
-    public void removeRealm(Realm realm) {
+    public void realmOnlyRemoveRealm(Realm realm) {
         ownedRealms.remove(realm);
-        if (realm.hasOwner()) {
-            realm.removeOwner();
-        }
     }
 
     public int getClaims() {
