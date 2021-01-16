@@ -177,9 +177,7 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
     
         @Override
         public CommandElement[] getSubelements() {
-            return new CommandElement[] {
-                new SelectCommands.Abandon()
-            };
+            return SelectCommands.elements;
         }
     
         @Override
@@ -231,9 +229,7 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
     
         @Override
         public CommandElement[] getSubelements() {
-            return new CommandElement[] {
-                new SelectCommands.Abandon()
-            };
+            return SelectCommands.elements;
         }
     
         @Override
