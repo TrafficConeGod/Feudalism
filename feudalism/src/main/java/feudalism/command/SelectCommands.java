@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -162,10 +163,26 @@ public class SelectCommands {
                 Realm realm = (Realm) data.get(0);
                 UUID uuid = Util.getPlayerUuidByName(args[0]);
                 User user = User.get(uuid);
-                Chat.sendMessage(sender, String.format("Are you sure you want to change ownership of %s to %s", realm.getName(), args[0]));
-                new Confirmation((Player) sender, () -> {
-                    realm.setOwner(user);
-                    Chat.sendMessage(sender, String.format("Changed ownership of %s over to %s", realm.getName(), args[0]));
+                Player player = (Player) sender;
+                OfflinePlayer offlinePlayer = user.getOfflinePlayer();
+                if (!offlinePlayer.isOnline()) {
+                    throw new FeudalismException("New owner must be online");
+                }
+                Player newOwnerPlayer = user.getPlayer();
+                float personalUnionFormPrice = Config.getFloat("realm.personal_union_form_price");
+                if (!user.hasMoney(personalUnionFormPrice)) {
+                    throw new FeudalismException(String.format("%s needs at least %s in their account to form a personal union", newOwnerPlayer.getDisplayName(), personalUnionFormPrice));
+                }
+                Chat.sendMessage(sender, String.format("Are you sure you want to change ownership of %s to %s?", realm.getName(), newOwnerPlayer.getDisplayName()));
+                new Confirmation(player, () -> {
+                    Chat.sendMessage(newOwnerPlayer, String.format("%s is offering you to become the new owner of %s. Do you accept? This action will cost %s.", player.getDisplayName(), realm.getName()));
+                    new Request(newOwnerPlayer, () -> {
+                        realm.setOwner(user);
+                        user.removeMoney(personalUnionFormPrice);
+                        Chat.sendMessage(sender, String.format("%s accepted your request to change ownership of %s", newOwnerPlayer.getDisplayName(), realm.getName()));
+                    }, () -> {
+                        Chat.sendMessage(sender, String.format("%s denied your request to be the new owner", newOwnerPlayer.getDisplayName()));
+                    });
                 });
             }
         
