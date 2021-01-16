@@ -52,9 +52,9 @@ public class AdminCommand implements CommandElement, CommandExecutor, TabComplet
 
     @Override
     public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+        CommandElement element = getSubelementWithAlias(args[0]);
         Chat.sendMessage(sender, "You are about to perform an admin action. Do you wish to continue?");
         new Confirmation(sender, () -> {
-            CommandElement element = getSubelementWithAlias(args[0]);
             element.execute(sender, alias, Util.trimArgs(args, 1), data);
         });
     }
