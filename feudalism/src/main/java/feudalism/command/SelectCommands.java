@@ -18,6 +18,7 @@ import feudalism.Util;
 import feudalism.object.Confirmation;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
+import feudalism.object.Request;
 import feudalism.object.User;
 
 public class SelectCommands {
@@ -175,7 +176,7 @@ public class SelectCommands {
                 }
                 Chat.sendMessage(sender, String.format("Are you sure you want to change ownership of %s to %s?", realm.getName(), newOwnerPlayer.getDisplayName()));
                 new Confirmation(player, () -> {
-                    Chat.sendMessage(newOwnerPlayer, String.format("%s is offering you to become the new owner of %s. Do you accept? This action will cost %s.", player.getDisplayName(), realm.getName()));
+                    Chat.sendMessage(newOwnerPlayer, String.format("%s is offering you to become the new owner of %s. Do you accept? This action will cost %s.", player.getDisplayName(), realm.getName(), personalUnionFormPrice));
                     new Request(newOwnerPlayer, () -> {
                         realm.setOwner(user);
                         user.removeMoney(personalUnionFormPrice);

@@ -18,6 +18,7 @@ import feudalism.object.Confirmation;
 import feudalism.object.GridCoord;
 import feudalism.object.PermType;
 import feudalism.object.Realm;
+import feudalism.object.Request;
 import feudalism.object.Siege;
 import feudalism.object.SiegeGoal;
 import feudalism.object.User;
@@ -80,6 +81,7 @@ public class Registry implements Printable, Readable {
     private List<SiegeGoal> siegeGoals = new ArrayList<>();
     private List<PermType> permTypes = new ArrayList<>();
     private List<Confirmation> confirmations = new ArrayList<>();
+    private List<Request> requests = new ArrayList<>();
     private World world;
     private Economy economy;
 
@@ -370,6 +372,33 @@ public class Registry implements Printable, Readable {
 
     public List<Confirmation> getConfirmations() {
         return confirmations;
+    }
+
+    public void addOrReplaceRequest(Request request) {
+        for (Request check : requests) {
+            if (check.getSender() == request.getSender()) {
+                requests.remove(check);
+                break;
+            }
+        }
+        requests.add(request);
+    }
+
+    public void removeRequest(Request request) {
+        requests.remove(request);
+    }
+
+    public Request getRequest(CommandSender sender) throws FeudalismException {
+        for (Request request : requests) {
+            if (request.getSender() == sender) {
+                return request;
+            }
+        }
+        throw new FeudalismException(String.format("You have nothing to accept or deny"));
+    }
+
+    public List<Request> getRequests() {
+        return requests;
     }
 
     public void save() {

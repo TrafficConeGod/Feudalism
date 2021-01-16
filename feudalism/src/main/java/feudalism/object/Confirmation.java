@@ -9,11 +9,11 @@ import feudalism.Registry;
 
 public class Confirmation {
     private CommandSender sender;
-    private ConfirmationInterface confInterface;
+    private Lambda lambda;
 
-    public Confirmation(CommandSender sender, ConfirmationInterface confInterface) {
+    public Confirmation(CommandSender sender, Lambda lambda) {
         this.sender = sender;
-        this.confInterface = confInterface;
+        this.lambda = lambda;
         Registry.getInstance().addOrReplaceConfirmation(this);
         sender.sendMessage(Chat.insertColorCode("&a/confirm &rto confirm"));
         sender.sendMessage(Chat.insertColorCode("&c/cancel &rto cancel"));
@@ -25,7 +25,7 @@ public class Confirmation {
 
     public void confirm() {
         try {
-            confInterface.onConfirm();
+            lambda.run();
         } catch (FeudalismException e) {
             Chat.sendErrorMessage(sender, e.getMessage());
         }

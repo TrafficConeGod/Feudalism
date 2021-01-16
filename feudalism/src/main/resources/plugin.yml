@@ -12,6 +12,14 @@ commands:
     description: Cancel
     usage: /<command>
     permission: feudalism.confirmation
+  accept:
+    description: Accept
+    usage: /<command>
+    permission: feudalism.request
+  deny:
+    description: Deny
+    usage: /<command>
+    permission: feudalism.request
   realm:
     description: Realm command
     usage: /<command>
@@ -24,6 +32,9 @@ commands:
 permissions:
   feudalism.confirmation:
     description: Confirmation
+    default: true
+  feudalism.request:
+    description: Request
     default: true
   feudalism.realm:
     description: Realm

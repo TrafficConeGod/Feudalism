@@ -14,6 +14,8 @@ import ca.uqac.lif.json.JsonElement;
 import feudalism.command.AdminCommand;
 import feudalism.command.CancelCommand;
 import feudalism.command.ConfirmCommand;
+import feudalism.command.AcceptCommand;
+import feudalism.command.DenyCommand;
 import feudalism.command.RealmCommand;
 import feudalism.listener.BlockListener;
 import feudalism.listener.PlayerListener;
@@ -96,6 +98,8 @@ public class App extends JavaPlugin {
         this.getCommand("realm").setExecutor(new RealmCommand());
         this.getCommand("confirm").setExecutor(new ConfirmCommand());
         this.getCommand("cancel").setExecutor(new CancelCommand());
+        this.getCommand("accept").setExecutor(new AcceptCommand());
+        this.getCommand("deny").setExecutor(new DenyCommand());
     }
 
     private void initListeners() {
