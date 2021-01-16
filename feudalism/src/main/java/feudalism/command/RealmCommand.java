@@ -124,7 +124,7 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
     
         @Override
         public int getRequiredArgs() {
-            return 0;
+            return 1;
         }
     
         @Override
