@@ -294,6 +294,7 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             Chat.sendMessage(sender, String.format("Are you sure you want to leave %s?", realm.getName()));
             new Confirmation(sender, () -> {
                 realm.removeMember(user);
+                Chat.sendMessage(sender, String.format("Successfully left %s", realm.getName()));
             });
         }
     

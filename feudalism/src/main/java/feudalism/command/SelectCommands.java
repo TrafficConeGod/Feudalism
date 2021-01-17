@@ -181,6 +181,7 @@ public class SelectCommands {
                         realm.setOwner(user);
                         user.removeMoney(personalUnionFormPrice);
                         Chat.sendMessage(sender, String.format("%s accepted your request to change ownership of %s", newOwnerPlayer.getDisplayName(), realm.getName()));
+                        Chat.sendMessage(newOwnerPlayer, String.format("Successfully gained ownership of %s", realm.getName()));
                     }, () -> {
                         Chat.sendMessage(sender, String.format("%s denied your request to be the new owner", newOwnerPlayer.getDisplayName()));
                     });
