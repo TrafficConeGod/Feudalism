@@ -250,6 +250,19 @@ public class Registry implements Printable, Readable {
         throw new FeudalismException(String.format("No perm type with name %s", name));
     }
 
+    public List<PermType> getPermTypes() {
+        return permTypes;
+    }
+
+    public PermType getPermTypeByDisplayName(String displayName) throws FeudalismException {
+        for (PermType type : permTypes) {
+            if (type.getDisplayName().equals(displayName)) {
+                return type;
+            }
+        }
+        throw new FeudalismException(String.format("No perm type with name %s", displayName));
+    }
+
     public boolean isInConflict(Realm realm1, Realm realm2) {
         for (Siege siege : getSieges()) {
             List<Realm> attackers = siege.getAttackers();

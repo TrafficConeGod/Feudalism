@@ -17,6 +17,8 @@ import feudalism.Registry;
 import feudalism.Util;
 import feudalism.object.Confirmation;
 import feudalism.object.GridCoord;
+import feudalism.object.PermType;
+import feudalism.object.Perms;
 import feudalism.object.Realm;
 import feudalism.object.Request;
 import feudalism.object.User;
@@ -25,10 +27,11 @@ public class SelectCommands {
     public static final CommandElement[] elements = new CommandElement[] {
         new Claim(),
         new Set(),
-        new Abandon()
+        new Abandon(),
+        new ViewPerms()
     };
     
-    public static class Abandon implements CommandElement {
+    private static class Abandon implements CommandElement {
 
         @Override
         public String[] getAliases() {
@@ -123,7 +126,8 @@ public class SelectCommands {
         @Override
         public CommandElement[] getSubelements() {
             return new CommandElement[] {
-                new Owner()
+                new Owner(),
+                new SetPerm()
             };
         }
 
@@ -197,6 +201,123 @@ public class SelectCommands {
                 return names;
             }
             
+        }
+
+        private class SetPerm implements CommandElement {
+
+            @Override
+            public String[] getAliases() {
+                return new String[] { "perm" };
+            }
+        
+            @Override
+            public int getRequiredArgs() {
+                return 3;
+            }
+        
+            @Override
+            public CommandElement[] getSubelements() {
+                return new CommandElement[0];
+            }
+        
+            @Override
+            public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+                Realm realm = (Realm) data.get(0);
+                String category = args[0];
+                String typeString = args[1];
+                String statusString = args[2];
+                PermType type = Registry.getInstance().getPermTypeByDisplayName(typeString);
+                if (!statusString.equals("enabled") && !statusString.equals("disabled")) {
+                    throw new FeudalismException("Status must be enabled or disabled");
+                }
+                boolean status = statusString.equals("enabled") ? true : false;
+                switch (category) {
+                    case "outsiders":
+                        realm.getOutsiderPerms().set(type, status);
+                        break;
+                    case "members":
+                        realm.getMemberPerms().set(type, status);
+                        break;
+                    case "subjects":
+                        realm.getSubjectPerms().set(type, status);
+                        break;
+                    case "overlords":
+                        realm.getOverlordPerms().set(type, status);
+                        break;
+                    default:
+                        throw new FeudalismException("Category must be: outsiders, members, subjects, or overlords");
+                }
+                Chat.sendMessage(sender, String.format("Successfully set perm %s on category %s to %s", category, typeString, statusString));
+            }
+        
+            @Override
+            public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+                if (args.length == 1) {
+                    List<String> categories = new ArrayList<>();
+                    categories.add("outsiders");
+                    categories.add("members");
+                    categories.add("subjects");
+                    categories.add("overlords");
+                    return categories;
+                }
+                if (args.length == 2) {
+                    List<String> types = new ArrayList<>();
+                    for (PermType type : Registry.getInstance().getPermTypes()) {
+                        types.add(type.getDisplayName());
+                    }
+                    return types;
+                }
+                if (args.length == 3) {
+                    List<String> statuses = new ArrayList<>();
+                    statuses.add("enabled");
+                    statuses.add("disabled");
+                    return statuses;
+                }
+                return new ArrayList<>();
+            }
+            
+        }
+        
+    }
+
+    private static class ViewPerms implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "perms" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 0;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[0];
+        }
+
+        private String getPermsString(Perms perms) {
+            String output = "";
+            for (PermType type : Registry.getInstance().getPermTypes()) {
+                boolean status = perms.get(type);
+                output += String.format("%s: %s, ", type.getDisplayName(), status ? "enabled" : "disabled");
+            }
+            return output;
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            Realm realm = (Realm) data.get(0);
+            Chat.sendStatMessage(sender, "Outsiders", getPermsString(realm.getOutsiderPerms()));
+            Chat.sendStatMessage(sender, "Members", getPermsString(realm.getMemberPerms()));
+            Chat.sendStatMessage(sender, "Subjects", getPermsString(realm.getSubjectPerms()));
+            Chat.sendStatMessage(sender, "Overlords", getPermsString(realm.getOverlordPerms()));
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            return new ArrayList<>();
         }
         
     }
