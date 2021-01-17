@@ -147,7 +147,7 @@ public class SelectCommands {
             realm.removeClaim(coord);
             int newClaimSize = realm.getClaims().size();
             if (newClaimSize != claimSize - 1) {
-                throw new FeudalismException("You can't unclaim land that would make you too far from your overlord");
+                throw new FeudalismException("You can't unclaim land that would make you too far from your overlord or would segment your realm");
             }
             Chat.sendMessage(sender, String.format("Successfully unclaimed %s, %s", coord.getGridX(), coord.getGridZ()));
             coord.clean();
