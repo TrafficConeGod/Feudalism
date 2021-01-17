@@ -295,7 +295,7 @@ public class Realm implements Printable, Readable {
     public void removeClaim(GridCoord coord) {
         if (hasOverlord) {
             claims.remove(coord);
-            if (!isWithinBorderRadius(overlord)) {
+            if (!isWithinBorderRadius(overlord) || !isConnected()) {
                 claims.add(coord);
                 return;
             }
@@ -363,6 +363,25 @@ public class Realm implements Printable, Readable {
             }
         }
         return false;
+    }
+
+    public boolean isConnected(GridCoord coord) {
+        return (
+            (GridCoord.getFromGridPosition(coord.getGridX() - 1, coord.getGridZ()).getOwnerOrNull() == this) ||
+            (GridCoord.getFromGridPosition(coord.getGridX() + 1, coord.getGridZ()).getOwnerOrNull() == this) ||
+            (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() - 1).getOwnerOrNull() == this) ||
+            (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() + 1).getOwnerOrNull() == this)
+        );
+    }
+
+    public boolean isConnected() {
+        for (GridCoord coord : claims) {
+            if (!isConnected(coord)) {
+                System.out.println("DISCONNECTED");
+                return false;
+            }
+        }
+        return true;
     }
 
     private int getBorderRadius() {

@@ -69,9 +69,12 @@ public class AppTest {
         Realm r3 = new Realm(true);
         r3.addClaim(GridCoord.getFromGridPosition(9, 10));
         r3.addClaim(GridCoord.getFromGridPosition(10, 10));
+        r3.addClaim(GridCoord.getFromGridPosition(10, 11));
+        r3.addClaim(GridCoord.getFromGridPosition(11, 11));
+        r3.removeClaim(GridCoord.getFromGridPosition(10, 10));
         r3.setOverlord(r1);
         r3.removeClaim(GridCoord.getFromGridPosition(9, 10));
-        assertEquals(true, r3.getClaims().size() == 2);
+        assertEquals(true, r3.getClaims().size() == 3);
         Registry.resetInstance();
     }
 

@@ -26,6 +26,7 @@ import feudalism.object.User;
 public class SelectCommands {
     public static final CommandElement[] elements = new CommandElement[] {
         new Claim(),
+        new Unclaim(),
         new Set(),
         new Abandon(),
         new ViewPerms(),
@@ -103,6 +104,52 @@ public class SelectCommands {
             user.removeMoney(claimPrice);
             realm.addClaim(coord);
             Chat.sendMessage(sender, String.format("Successfully claimed %s, %s for %s", coord.getGridX(), coord.getGridZ(), claimPrice));
+            coord.clean();
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            return new ArrayList<>();
+        }
+        
+    }
+
+    private static class Unclaim implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "unclaim" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 0;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[0];
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            Realm realm = (Realm) data.get(0);
+            Player player = (Player) sender;
+            GridCoord coord = GridCoord.getFromLocation(player.getLocation());
+            if (!coord.hasOwner() || coord.getOwner() != realm) {
+                coord.clean();
+                throw new FeudalismException("You can not unclaim unowned land");
+            }
+            int claimSize = realm.getClaims().size();
+            if (claimSize == 1) {
+                throw new FeudalismException("You can't unclaim the last land your realm owns");
+            }
+            realm.removeClaim(coord);
+            int newClaimSize = realm.getClaims().size();
+            if (newClaimSize != claimSize - 1) {
+                throw new FeudalismException("You can't unclaim land that would make you too far from your overlord");
+            }
+            Chat.sendMessage(sender, String.format("Successfully unclaimed %s, %s", coord.getGridX(), coord.getGridZ()));
             coord.clean();
         }
     
