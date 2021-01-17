@@ -29,7 +29,8 @@ public class SelectCommands {
         new Set(),
         new Abandon(),
         new ViewPerms(),
-        new Invite()
+        new Invite(),
+        new Kick()
     };
     
     private static class Abandon implements CommandElement {
@@ -382,6 +383,78 @@ public class SelectCommands {
                 }, () -> {
                     Chat.sendMessage(sender, String.format("%s denied your request to join %s", realm.getName()));
                 });
+            }
+        
+            @Override
+            public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+                return Registry.getInstance().getPlayerNames();
+            }
+            
+        }
+
+    }
+
+    private static class Kick implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "kick" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 1;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[] {
+                new KickMember()
+            };
+        }
+
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            CommandElement element = getSubelementWithAlias(args[0]);
+            element.execute(sender, alias, Util.trimArgs(args, 1), data);
+        }
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            if (args.length == 1) {
+                return getSubaliases();
+            }
+            CommandElement element = getSubelementWithAlias(args[0]);
+            return element.getTabComplete(sender, alias, Util.trimArgs(args, 1), data);
+        }
+        
+        private class KickMember implements CommandElement {
+
+            @Override
+            public String[] getAliases() {
+                return new String[] { "member" };
+            }
+        
+            @Override
+            public int getRequiredArgs() {
+                return 1;
+            }
+        
+            @Override
+            public CommandElement[] getSubelements() {
+                return new CommandElement[0];
+            }
+        
+            @Override
+            public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+                Realm realm = (Realm) data.get(0);
+                UUID uuid = Util.getPlayerUuidByName(args[0]);
+                User user = User.get(uuid);
+                if (!user.hasMemberRealm() || user.getMemberRealm() != realm) {
+                    throw new FeudalismException(String.format("%s must be a member of your realm", args[0]));
+                }
+                realm.removeMember(user);
+                Chat.sendMessage(sender, String.format("Successfully removed %s from your realm", args[0]));
             }
         
             @Override
