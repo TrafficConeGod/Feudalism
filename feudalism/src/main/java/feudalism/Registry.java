@@ -414,6 +414,14 @@ public class Registry implements Printable, Readable {
         return requests;
     }
 
+    public List<String> getPlayerNames() {
+        List<String> names = new ArrayList<>();
+        for (Player player : world.getPlayers()) {
+            names.add(player.getDisplayName());
+        }
+        return names;
+    }
+
     public void save() {
         try {
             fridge.store(this);

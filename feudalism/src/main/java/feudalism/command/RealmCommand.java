@@ -42,7 +42,8 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             new This(),
             new As(),
             new Create(),
-            new Claim()
+            new Claim(),
+            new Leave()
         };
     }
     
@@ -261,6 +262,44 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             }
             CommandElement element = getSubelementWithAlias(args[0]);
             return element.getTabComplete(sender, alias, Util.trimArgs(args, 1), data);
+        }
+        
+    }
+
+    private class Leave implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "leave" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 0;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[0];
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            Player player = (Player) sender;
+            User user = User.get(player);
+            if (!user.hasMemberRealm()) {
+                throw new FeudalismException("Must be a member of a realm to leave a realm");
+            }
+            Realm realm = user.getMemberRealm();
+            Chat.sendMessage(sender, String.format("Are you sure you want to leave %s?", realm.getName()));
+            new Confirmation(sender, () -> {
+                realm.removeMember(user);
+            });
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            return new ArrayList<>();
         }
         
     }

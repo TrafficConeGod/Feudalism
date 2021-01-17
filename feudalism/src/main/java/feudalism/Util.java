@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import feudalism.object.User;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -14,7 +15,7 @@ public class Util {
     public static UUID getPlayerUuidByName(String name) throws FeudalismException {
         if (!isJUnitTest()) {
             OfflinePlayer player = Bukkit.getOfflinePlayer(name); // oh ffs this is just for a command im not using it for data storage (what do you think my goal here is?????)
-            if (player.hasPlayedBefore()) {
+            if (player.hasPlayedBefore() || player.isOnline()) {
                 return player.getUniqueId();
             } else {
                 throw new FeudalismException("No player with name " + name);
@@ -76,5 +77,15 @@ public class Util {
 
     public static void sendActionBarMessage(Player player, String msg) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg));
+    }
+
+    public static User getUserByNameAndCheckOnline(String name) throws FeudalismException {
+        UUID uuid = Util.getPlayerUuidByName(name);
+        User user = User.get(uuid);
+        OfflinePlayer offlinePlayer = user.getOfflinePlayer();
+        if (!offlinePlayer.isOnline()) {
+            throw new FeudalismException(String.format("%s must be online to do this", name));
+        }
+        return user;
     }
 }
