@@ -95,6 +95,8 @@ public class AppTest {
         assertEquals(true, realmReconstruct.getMembers().get(0) == member);
         assertEquals(true, realmReconstruct.hasPerm(user, build));
         assertEquals(true, realmReconstruct.hasPerm(member, build));
+        realm.setOwner(member);
+        assertEquals(true, realm.getOwner() == member);
         Registry.resetInstance();
     }
 

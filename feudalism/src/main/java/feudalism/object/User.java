@@ -26,6 +26,8 @@ average feudalism user: strongguy.png
 public class User implements Printable, Readable {
     private UUID uuid;
     private List<Realm> ownedRealms = new ArrayList<>();
+    private boolean hasMemberRealm = false;
+    private Realm memberRealm;
 
     public User() throws FeudalismException {
         uuid = UUID.randomUUID();
@@ -120,6 +122,29 @@ public class User implements Printable, Readable {
     
     public boolean hasPerm(Realm realm, PermType type) {
         return realm.hasPerm(this, type);
+    }
+
+    public boolean hasMemberRealm() {
+        return hasMemberRealm;
+    }
+
+    public void realmOnlySetMemberRealm(Realm memberRealm) throws FeudalismException {
+        if (hasMemberRealm) {
+            throw new FeudalismException("Already has member realm");
+        }
+        hasMemberRealm = true;
+        this.memberRealm = memberRealm;
+    }
+
+    public void realmOnlyRemoveMemberRealm() {
+        hasMemberRealm = false;
+    }
+
+    public Realm getMemberRealm() throws FeudalismException {
+        if (!hasMemberRealm()) {
+            throw new FeudalismException("User does not have a member realm");
+        }
+        return memberRealm;
     }
 
     @Override
