@@ -38,12 +38,24 @@ public class Config {
                     List<Object> list = new ArrayList<>();
                     {
                         Map<String, Object> submap = new HashMap<>();
-                        submap.put("name", "block_place");
-                        submap.put("display_name", "Place Block");
+                        submap.put("name", "build");
+                        submap.put("display_name", "build");
                         submap.put("default", false);
                         {
                             List<Object> sublist = new ArrayList<>();
                             sublist.add("block_place");
+                            submap.put("events", sublist);
+                        }
+                        list.add(submap);
+                    }
+                    {
+                        Map<String, Object> submap = new HashMap<>();
+                        submap.put("name", "destroy");
+                        submap.put("display_name", "destroy");
+                        submap.put("default", false);
+                        {
+                            List<Object> sublist = new ArrayList<>();
+                            sublist.add("block_break");
                             submap.put("events", sublist);
                         }
                         list.add(submap);
@@ -55,7 +67,7 @@ public class Config {
             // grid_coord config
             {
                 Map<String, Object> map = new HashMap<>();
-                map.put("size", 8);
+                map.put("size", 16);
                 configSchema.put("grid_coord", map);
             }
             // siege config
