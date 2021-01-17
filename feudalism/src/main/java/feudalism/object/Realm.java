@@ -160,6 +160,9 @@ public class Realm implements Printable, Readable {
         if (Registry.getInstance().isInConflict(overlord, this)) {
             throw new FeudalismException("Can't add a subject which is in conflict with the overlord");
         }
+        if (!isWithinBorderRadius(overlord)) {
+            throw new FeudalismException("Can't set overlord outside of border radius");
+        }
         boolean hadOverlord = hasOverlord;
         Realm oldOverlord = this.overlord;
         hasOverlord = true;
@@ -290,6 +293,14 @@ public class Realm implements Printable, Readable {
     }
 
     public void removeClaim(GridCoord coord) {
+        if (hasOverlord) {
+            claims.remove(coord);
+            if (!isWithinBorderRadius(overlord)) {
+                claims.add(coord);
+                return;
+            }
+            claims.add(coord);
+        }
         claims.remove(coord);
         if (claims.size() == 0) {
             destroy();
@@ -381,7 +392,7 @@ public class Realm implements Printable, Readable {
     }
 
     public boolean isWithinBorderRadius(Realm realm) {
-        if (realm.getClaims().size() <= 0) {
+        if (realm.getClaims().size() <= 0 || getClaims().size() <= 0) {
             return true;
         }
         for (GridCoord coord : realm.getClaims()) {

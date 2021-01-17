@@ -54,6 +54,28 @@ public class AppTest {
     }
 
     @Test
+    public void realmDistTest() throws FeudalismException {
+        Realm r1 = new Realm(true);
+        r1.addClaim(GridCoord.getFromGridPosition(0, 0));
+        r1.addClaim(GridCoord.getFromGridPosition(0, 1));
+        Realm r2 = new Realm(true);
+        r2.addClaim(GridCoord.getFromGridPosition(20, 20));
+        try {
+            r2.setOverlord(r1);
+            assertEquals(true, false);
+        } catch (FeudalismException e) {
+
+        }
+        Realm r3 = new Realm(true);
+        r3.addClaim(GridCoord.getFromGridPosition(9, 10));
+        r3.addClaim(GridCoord.getFromGridPosition(10, 10));
+        r3.setOverlord(r1);
+        r3.removeClaim(GridCoord.getFromGridPosition(9, 10));
+        assertEquals(true, r3.getClaims().size() == 2);
+        Registry.resetInstance();
+    }
+
+    @Test
     public void descendantSubjectsTest() throws FeudalismException {
         Realm tr = new Realm(true);
         Realm mr = new Realm(true);
