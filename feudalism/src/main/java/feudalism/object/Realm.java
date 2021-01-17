@@ -293,18 +293,21 @@ public class Realm implements Printable, Readable {
     }
 
     public void removeClaim(GridCoord coord) {
+        if (claims.size() - 1 == 0) {
+            coord.destroy();
+            destroy();
+        }
+        if (!isConnected(coord)) {
+            return;
+        }
+        claims.remove(coord);
         if (hasOverlord) {
-            claims.remove(coord);
-            if (!isWithinBorderRadius(overlord) || !isConnected()) {
+            if (!isWithinBorderRadius(overlord)) {
                 claims.add(coord);
                 return;
             }
-            claims.add(coord);
         }
-        claims.remove(coord);
-        if (claims.size() == 0) {
-            destroy();
-        }
+        coord.destroy();
     }
 
     public boolean hasClaim(GridCoord coord) {
@@ -365,23 +368,41 @@ public class Realm implements Printable, Readable {
         return false;
     }
 
-    public boolean isConnected(GridCoord coord) {
-        return (
-            (GridCoord.getFromGridPosition(coord.getGridX() - 1, coord.getGridZ()).getOwnerOrNull() == this) ||
-            (GridCoord.getFromGridPosition(coord.getGridX() + 1, coord.getGridZ()).getOwnerOrNull() == this) ||
-            (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() - 1).getOwnerOrNull() == this) ||
-            (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() + 1).getOwnerOrNull() == this)
-        );
+    // public boolean isConnected(GridCoord coord) {
+    //     return (
+            // (GridCoord.getFromGridPosition(coord.getGridX() - 1, coord.getGridZ()).getOwnerOrNull() == this) ||
+            // (GridCoord.getFromGridPosition(coord.getGridX() + 1, coord.getGridZ()).getOwnerOrNull() == this) ||
+            // (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() - 1).getOwnerOrNull() == this) ||
+            // (GridCoord.getFromGridPosition(coord.getGridX(), coord.getGridZ() + 1).getOwnerOrNull() == this)
+    //     );
+    // }
+
+    private void connectedCheck(GridCoord coord, int xDir, int zDir, List<GridCoord> checked, GridCoord removed) {
+        GridCoord newCoord = GridCoord.getFromGridPosition(coord.getGridX() + xDir, coord.getGridZ() + zDir);
+        if (newCoord.getOwnerOrNull() == this && newCoord != removed) {
+            connectedCheck(newCoord, checked, removed);
+        }
+        newCoord.clean();
     }
 
-    public boolean isConnected() {
-        for (GridCoord coord : claims) {
-            if (!isConnected(coord)) {
-                System.out.println("DISCONNECTED");
-                return false;
-            }
+    private void connectedCheck(GridCoord coord, List<GridCoord> checked, GridCoord removed) {
+        if (checked.contains(coord)) {
+            return;
         }
-        return true;
+        checked.add(coord);
+        connectedCheck(coord, -1, 0, checked, removed);
+        connectedCheck(coord, 0, -1, checked, removed);
+        connectedCheck(coord, 1, 0, checked, removed);
+        connectedCheck(coord, 0, 1, checked, removed);
+    }
+
+    public boolean isConnected(GridCoord removed) {
+        if (claims.size() <= 0) {
+            return true;
+        }
+        List<GridCoord> checked = new ArrayList<>();
+        connectedCheck(claims.get(0), checked, removed);
+        return checked.size() == (claims.size() - 1);
     }
 
     private int getBorderRadius() {
