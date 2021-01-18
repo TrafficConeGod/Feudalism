@@ -294,7 +294,7 @@ public class Registry implements Printable, Readable {
 
     public boolean hasRealmWithName(String name) {
         for (Realm realm : realms) {
-            if (realm.getName().equalsIgnoreCase(name)) {
+            if (realm.getName().equals(name)) {
                 return true;
             }
         }
@@ -418,6 +418,14 @@ public class Registry implements Printable, Readable {
         List<String> names = new ArrayList<>();
         for (Player player : world.getPlayers()) {
             names.add(player.getDisplayName());
+        }
+        return names;
+    }
+
+    public List<String> getRealmNames() {
+        List<String> names = new ArrayList<>();
+        for (Realm realm : getRealms()) {
+            names.add(realm.getName());
         }
         return names;
     }

@@ -82,10 +82,7 @@ public class Util {
     public static User getUserByNameAndCheckOnline(String name) throws FeudalismException {
         UUID uuid = Util.getPlayerUuidByName(name);
         User user = User.get(uuid);
-        OfflinePlayer offlinePlayer = user.getOfflinePlayer();
-        if (!offlinePlayer.isOnline()) {
-            throw new FeudalismException(String.format("%s must be online to do this", name));
-        }
+        user.checkOnline();
         return user;
     }
 }

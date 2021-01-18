@@ -147,6 +147,13 @@ public class User implements Printable, Readable {
         return memberRealm;
     }
 
+    public void checkOnline() throws FeudalismException {
+        OfflinePlayer offlinePlayer = getOfflinePlayer();
+        if (!offlinePlayer.isOnline()) {
+            throw new FeudalismException(String.format("%s must be online to do this", offlinePlayer.getName()));
+        }
+    }
+
     @Override
     public Object print(ObjectPrinter<?> printer) throws PrintException {
         List<Object> list = new ArrayList<>();

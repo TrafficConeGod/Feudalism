@@ -17,6 +17,7 @@ import feudalism.Util;
 import feudalism.object.Confirmation;
 import feudalism.object.GridCoord;
 import feudalism.object.Realm;
+import feudalism.object.Request;
 import feudalism.object.User;
 
 public class RealmCommand implements CommandElement, CommandExecutor, TabCompleter {
@@ -43,7 +44,8 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
             new As(),
             new Create(),
             new Claim(),
-            new Leave()
+            new Leave(),
+            new Grant()
         };
     }
     
@@ -300,6 +302,81 @@ public class RealmCommand implements CommandElement, CommandExecutor, TabComplet
     
         @Override
         public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            return new ArrayList<>();
+        }
+        
+    }
+
+    private class Grant implements CommandElement {
+
+        @Override
+        public String[] getAliases() {
+            return new String[] { "grant", "give" };
+        }
+    
+        @Override
+        public int getRequiredArgs() {
+            return 1;
+        }
+    
+        @Override
+        public CommandElement[] getSubelements() {
+            return new CommandElement[0];
+        }
+    
+        @Override
+        public void onExecute(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            Player player = (Player) sender;
+            User user = User.get(player);
+            GridCoord coord = GridCoord.getFromLocation(player.getLocation());
+            if (!coord.hasOwner() || !user.ownsRealm(coord.getOwner())) {
+                throw new FeudalismException("You must own the land you are standing in");
+            }
+            Realm from = coord.getOwner();
+            if (!from.canRemoveClaim(coord)) {
+                throw new FeudalismException("Can't remove claim");
+            }
+            if (Registry.getInstance().hasRealmWithName(args[0])) {
+                Realm to = Registry.getInstance().getRealmByName(args[0]);
+                if (to.getOverlord() != from) {
+                    throw new FeudalismException("You can only grant land to a subject");
+                }
+                if (!to.hasDirectBorder(coord)) {
+                    throw new FeudalismException("Subject must border land");
+                }
+                from.removeClaim(coord);
+                GridCoord newCoord = GridCoord.getFromLocation(coord.getLocation());
+                to.addClaim(newCoord);
+                Chat.sendMessage(sender, String.format("Successfully granted land to %s", to.getName()));
+            } else {
+                if (args.length != 2) {
+                    throw new FeudalismException("Not enough args");
+                }
+                User subjectOwner = Util.getUserByNameAndCheckOnline(args[1]);
+                Player subjectPlayer = subjectOwner.getPlayer();
+                Chat.sendMessage(sender, String.format("Offering to grant a realm to %s", subjectPlayer.getDisplayName()));
+                Chat.sendMessage(subjectPlayer, String.format("%s is offering to grant you a realm in %s under the name %s. In return you must be a loyal subject of them. Do you accept?", player.getDisplayName(), args[0], from.getName()));
+                new Request(subjectPlayer, () -> {
+                    from.removeClaim(coord);
+                    GridCoord newCoord = GridCoord.getFromLocation(coord.getLocation());
+                    Realm to = new Realm(subjectOwner, args[0], newCoord);
+                    to.setOverlord(from);
+                    Chat.sendMessage(sender, String.format("%s accepted the grant of a realm", subjectPlayer.getDisplayName()));
+                    Chat.sendMessage(subjectPlayer, String.format("Successfully gained realm %s", to.getName()));
+                }, () -> {
+                    Chat.sendMessage(sender, String.format("%s denied the grant of a realm", subjectPlayer.getDisplayName()));
+                });
+            }
+        }
+    
+        @Override
+        public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
+            if (args.length == 1) {
+                return Registry.getInstance().getRealmNames();
+            }
+            if (args.length == 2) {
+                return Registry.getInstance().getPlayerNames();
+            }
             return new ArrayList<>();
         }
         

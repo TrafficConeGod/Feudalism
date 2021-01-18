@@ -200,11 +200,7 @@ public class AdminCommand implements CommandElement, CommandExecutor, TabComplet
         @Override
         public List<String> onTabComplete(CommandSender sender, String alias, String[] args, List<Object> data) throws FeudalismException {
             if (args.length == 1) {
-                List<String> names = new ArrayList<>();
-                for (Realm realm : Registry.getInstance().getRealms()) {
-                    names.add(realm.getName());
-                }
-                return names;
+                return Registry.getInstance().getRealmNames();
             }
             return new ArrayList<>();
         }

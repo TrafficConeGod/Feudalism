@@ -292,22 +292,30 @@ public class Realm implements Printable, Readable {
         }
     }
 
-    public void removeClaim(GridCoord coord) {
-        if (claims.size() - 1 == 0) {
-            coord.destroy();
-            destroy();
-        }
+    public boolean canRemoveClaim(GridCoord coord) {
         if (!isConnected(coord)) {
-            return;
+            return false;
         }
         claims.remove(coord);
         if (hasOverlord) {
             if (!isWithinBorderRadius(overlord)) {
                 claims.add(coord);
-                return;
+                return false;
             }
         }
-        coord.destroy();
+        claims.add(coord);
+        return true;
+    }
+
+    public void removeClaim(GridCoord coord) {
+        if (claims.size() - 1 == 0) {
+            coord.destroy();
+            destroy();
+        }
+        if (canRemoveClaim(coord)) {
+            claims.remove(coord);
+            coord.destroy();
+        }
     }
 
     public boolean hasClaim(GridCoord coord) {
